@@ -48,20 +48,6 @@ type Location {
 
 type Mutation {
   addLike(input: AddLikeInput): Listing
-  addLikedListingToProfile(input: AddLikedListingToProfileInput!): UserProfile!
-  removeLikedListingFromProfile(
-    input: RemoveLikedListingFromProfileInput!
-  ): UserProfile!
-}
-
-input AddLikedListingToProfileInput {
-  id: ID!
-  likedListings: String!
-}
-
-input RemoveLikedListingFromProfileInput {
-  id: ID!
-  likedListingIndex: Int!
 }
 
 input AddLikeInput {

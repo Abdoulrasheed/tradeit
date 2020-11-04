@@ -3,7 +3,6 @@ import { addLike, createListing, updateUserProfile } from "../../src/graphql/mut
 import { listListings } from "./queries";
 import config from "../../aws-exports";
 import { getListing } from "../../src/graphql/queries";
-import { addLikedListingToProfile } from "./mutations";
 import profileApi from "./auth"
 
 const {
@@ -92,7 +91,7 @@ const uploadToS3 = async (listing, onUploadProgress) => {
   }
 }
 
-const likeListing = async (listingID, like, profileID, likeListings) => {
+const likeListing = async (listingID, like, profileID ) => {
   try {
     const input = {
       input: {
