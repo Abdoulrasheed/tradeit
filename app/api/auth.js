@@ -3,7 +3,8 @@ import {
   createUserProfile,
   updateUserProfile,
 } from "../../src/graphql/mutations";
-import { getUserProfile, listUserProfiles } from "../../src/graphql/queries";
+import { getUserProfile } from "../../src/graphql/queries";
+import { listUserProfiles } from "../api/queries";
 
 const createUser = async (data) => {
   const user = {
@@ -19,32 +20,27 @@ const createUser = async (data) => {
 
 const register = async (user) => {
   try {
-    await Auth.signIn(user.email, user.password);
-    const profileInstance = await _createProfile();
+    const cognito = await Auth.signIn(user.email, user.password);
+    const profileInstance = await _createProfile(cognito.attributes.name);
     const profile = profileInstance.data.getUserProfile;
-    return { ...user, profile };
+    return { ...cognito.attributes, profile };
   } catch (error) {
     console.log("error creating an account", error);
   }
 };
 
-const login = async ({ username, password }) => {
-  try {
-    const response = await Auth.signIn(username, password);
-    const user = response.attributes;
-    const profile = await _getUserProfileByOwner(user.username);
-    return { ...user, profile };
-  } catch (error) {
-    console.log("error signin", error);
-  }
+const login = async ({ email, password }) => {
+  const cognito = await Auth.signIn(email, password);
+  const profile = await _getUserProfileByOwner(cognito.username);
+  return { ...cognito.attributes, profile };
 };
 
-const _createProfile = async () => {
-  const userProfile = { input: {} };
+const _createProfile = async (fullname) => {
+  const input = { input: { fullname } };
 
   try {
     const response = await API.graphql(
-      graphqlOperation(createUserProfile, userProfile)
+      graphqlOperation(createUserProfile, input)
     );
 
     const { id: profileID } = response.data.createUserProfile;
@@ -87,8 +83,8 @@ const _getUserProfileByOwner = async (userSub) => {
 
     return result;
   } catch (error) {
-    console.log(error);
+    console.log("error getting profile by owner", error);
   }
 };
 
-export default { createUser, register, login };
+export default { createUser, _getUserProfileByID, login, register };

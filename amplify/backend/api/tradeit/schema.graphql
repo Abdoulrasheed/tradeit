@@ -7,39 +7,24 @@ type UserProfile
     ]
   ) {
   id: ID!
+  fullname: String
   listings: [Listing] @connection(name: "UserListing")
   cartItem: [CartItem] @connection
-  picture: S3Object
+  picture: Image
+  likedListings: [ListingLike]
 }
 
-type Picture
-  @model
-  @auth(
-    rules: [
-      { allow: owner }
-      { allow: groups, groups: ["admins"], mutations: [create, update, delete] }
-    ]
-  ) {
+type Listing @model @searchable {
   id: ID!
-  name: String
-  owner: String
-  file: S3Object
-}
-
-type S3Object {
-  bucket: String!
-  region: String!
-  key: String!
-}
-
-type Listing @model {
-  id: ID!
-  name: String
+  title: String
   price: Float!
   owner: UserProfile! @connection(name: "UserListing")
   description: String
-  likes: Float
-  images: [Picture] @connection
+  likes: Int
+  images: [Image]
+  location: Location
+  categoryId: String
+  quantity: Int
 }
 
 type CartItem @model {
@@ -48,22 +33,40 @@ type CartItem @model {
   owner: UserProfile! @connection(name: "UserListing")
 }
 
-input CreateListingInput {
+type Image {
+  url: String!
+}
+
+type ListingLike {
+  listingID: String!
+}
+
+type Location {
+  lat: Float!
+  lon: Float!
+}
+
+type Mutation {
+  addLike(input: AddLikeInput): Listing
+  addLikedListingToProfile(input: AddLikedListingToProfileInput!): UserProfile!
+  removeLikedListingFromProfile(
+    input: RemoveLikedListingFromProfileInput!
+  ): UserProfile!
+}
+
+input AddLikedListingToProfileInput {
   id: ID!
-  name: String
-  price: Float!
-  likes: Float
-  description: String
+  likedListings: String!
+}
+
+input RemoveLikedListingFromProfileInput {
+  id: ID!
+  likedListingIndex: Int!
 }
 
 input AddLikeInput {
   id: ID
-  likes: Float!
-}
-
-type Mutation {
-  batchAddlistings(listings: [CreateListingInput]): [Listing]
-  addLike(input: AddLikeInput): Listing
+  likes: Int!
 }
 
 enum ModelAttributeTypes {

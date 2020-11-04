@@ -5,13 +5,16 @@ export const onCreateUserProfile = /* GraphQL */ `
   subscription OnCreateUserProfile($owner: String) {
     onCreateUserProfile(owner: $owner) {
       id
+      fullname
       listings {
         items {
           id
-          name
+          title
           price
           description
           likes
+          categoryId
+          quantity
           createdAt
           updatedAt
         }
@@ -27,9 +30,10 @@ export const onCreateUserProfile = /* GraphQL */ `
         nextToken
       }
       picture {
-        bucket
-        region
-        key
+        url
+      }
+      likedListings {
+        listingID
       }
       createdAt
       updatedAt
@@ -41,13 +45,16 @@ export const onUpdateUserProfile = /* GraphQL */ `
   subscription OnUpdateUserProfile($owner: String) {
     onUpdateUserProfile(owner: $owner) {
       id
+      fullname
       listings {
         items {
           id
-          name
+          title
           price
           description
           likes
+          categoryId
+          quantity
           createdAt
           updatedAt
         }
@@ -63,9 +70,10 @@ export const onUpdateUserProfile = /* GraphQL */ `
         nextToken
       }
       picture {
-        bucket
-        region
-        key
+        url
+      }
+      likedListings {
+        listingID
       }
       createdAt
       updatedAt
@@ -77,13 +85,16 @@ export const onDeleteUserProfile = /* GraphQL */ `
   subscription OnDeleteUserProfile($owner: String) {
     onDeleteUserProfile(owner: $owner) {
       id
+      fullname
       listings {
         items {
           id
-          name
+          title
           price
           description
           likes
+          categoryId
+          quantity
           createdAt
           updatedAt
         }
@@ -99,61 +110,14 @@ export const onDeleteUserProfile = /* GraphQL */ `
         nextToken
       }
       picture {
-        bucket
-        region
-        key
+        url
+      }
+      likedListings {
+        listingID
       }
       createdAt
       updatedAt
       owner
-    }
-  }
-`;
-export const onCreatePicture = /* GraphQL */ `
-  subscription OnCreatePicture($owner: String) {
-    onCreatePicture(owner: $owner) {
-      id
-      name
-      owner
-      file {
-        bucket
-        region
-        key
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdatePicture = /* GraphQL */ `
-  subscription OnUpdatePicture($owner: String) {
-    onUpdatePicture(owner: $owner) {
-      id
-      name
-      owner
-      file {
-        bucket
-        region
-        key
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeletePicture = /* GraphQL */ `
-  subscription OnDeletePicture($owner: String) {
-    onDeletePicture(owner: $owner) {
-      id
-      name
-      owner
-      file {
-        bucket
-        region
-        key
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -161,10 +125,11 @@ export const onCreateListing = /* GraphQL */ `
   subscription OnCreateListing {
     onCreateListing {
       id
-      name
+      title
       price
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -172,9 +137,10 @@ export const onCreateListing = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -183,15 +149,14 @@ export const onCreateListing = /* GraphQL */ `
       description
       likes
       images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
+        url
       }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
       createdAt
       updatedAt
     }
@@ -201,10 +166,11 @@ export const onUpdateListing = /* GraphQL */ `
   subscription OnUpdateListing {
     onUpdateListing {
       id
-      name
+      title
       price
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -212,9 +178,10 @@ export const onUpdateListing = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -223,15 +190,14 @@ export const onUpdateListing = /* GraphQL */ `
       description
       likes
       images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
+        url
       }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
       createdAt
       updatedAt
     }
@@ -241,10 +207,11 @@ export const onDeleteListing = /* GraphQL */ `
   subscription OnDeleteListing {
     onDeleteListing {
       id
-      name
+      title
       price
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -252,9 +219,10 @@ export const onDeleteListing = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -263,15 +231,14 @@ export const onDeleteListing = /* GraphQL */ `
       description
       likes
       images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
+        url
       }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
       createdAt
       updatedAt
     }
@@ -284,6 +251,7 @@ export const onCreateCartItem = /* GraphQL */ `
       listingID
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -291,9 +259,10 @@ export const onCreateCartItem = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -311,6 +280,7 @@ export const onUpdateCartItem = /* GraphQL */ `
       listingID
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -318,9 +288,10 @@ export const onUpdateCartItem = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -338,6 +309,7 @@ export const onDeleteCartItem = /* GraphQL */ `
       listingID
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -345,9 +317,10 @@ export const onDeleteCartItem = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt

@@ -1,54 +1,15 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const batchAddlistings = /* GraphQL */ `
-  mutation BatchAddlistings($listings: [CreateListingInput]) {
-    batchAddlistings(listings: $listings) {
-      id
-      name
-      price
-      owner {
-        id
-        listings {
-          nextToken
-        }
-        cartItem {
-          nextToken
-        }
-        picture {
-          bucket
-          region
-          key
-        }
-        createdAt
-        updatedAt
-        owner
-      }
-      description
-      likes
-      images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const addLike = /* GraphQL */ `
   mutation AddLike($input: AddLikeInput) {
     addLike(input: $input) {
       id
-      name
+      title
       price
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -56,9 +17,10 @@ export const addLike = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -67,34 +29,33 @@ export const addLike = /* GraphQL */ `
       description
       likes
       images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
+        url
       }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
       createdAt
       updatedAt
     }
   }
 `;
-export const createUserProfile = /* GraphQL */ `
-  mutation CreateUserProfile(
-    $input: CreateUserProfileInput!
-    $condition: ModelUserProfileConditionInput
-  ) {
-    createUserProfile(input: $input, condition: $condition) {
+export const addLikedListingToProfile = /* GraphQL */ `
+  mutation AddLikedListingToProfile($input: AddLikedListingToProfileInput!) {
+    addLikedListingToProfile(input: $input) {
       id
+      fullname
       listings {
         items {
           id
-          name
+          title
           price
           description
           likes
+          categoryId
+          quantity
           createdAt
           updatedAt
         }
@@ -110,9 +71,95 @@ export const createUserProfile = /* GraphQL */ `
         nextToken
       }
       picture {
-        bucket
-        region
-        key
+        url
+      }
+      likedListings {
+        listingID
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const removeLikedListingFromProfile = /* GraphQL */ `
+  mutation RemoveLikedListingFromProfile(
+    $input: RemoveLikedListingFromProfileInput!
+  ) {
+    removeLikedListingFromProfile(input: $input) {
+      id
+      fullname
+      listings {
+        items {
+          id
+          title
+          price
+          description
+          likes
+          categoryId
+          quantity
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      cartItem {
+        items {
+          id
+          listingID
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      picture {
+        url
+      }
+      likedListings {
+        listingID
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const createUserProfile = /* GraphQL */ `
+  mutation CreateUserProfile(
+    $input: CreateUserProfileInput!
+    $condition: ModelUserProfileConditionInput
+  ) {
+    createUserProfile(input: $input, condition: $condition) {
+      id
+      fullname
+      listings {
+        items {
+          id
+          title
+          price
+          description
+          likes
+          categoryId
+          quantity
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      cartItem {
+        items {
+          id
+          listingID
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      picture {
+        url
+      }
+      likedListings {
+        listingID
       }
       createdAt
       updatedAt
@@ -127,13 +174,16 @@ export const updateUserProfile = /* GraphQL */ `
   ) {
     updateUserProfile(input: $input, condition: $condition) {
       id
+      fullname
       listings {
         items {
           id
-          name
+          title
           price
           description
           likes
+          categoryId
+          quantity
           createdAt
           updatedAt
         }
@@ -149,9 +199,10 @@ export const updateUserProfile = /* GraphQL */ `
         nextToken
       }
       picture {
-        bucket
-        region
-        key
+        url
+      }
+      likedListings {
+        listingID
       }
       createdAt
       updatedAt
@@ -166,13 +217,16 @@ export const deleteUserProfile = /* GraphQL */ `
   ) {
     deleteUserProfile(input: $input, condition: $condition) {
       id
+      fullname
       listings {
         items {
           id
-          name
+          title
           price
           description
           likes
+          categoryId
+          quantity
           createdAt
           updatedAt
         }
@@ -188,70 +242,14 @@ export const deleteUserProfile = /* GraphQL */ `
         nextToken
       }
       picture {
-        bucket
-        region
-        key
+        url
+      }
+      likedListings {
+        listingID
       }
       createdAt
       updatedAt
       owner
-    }
-  }
-`;
-export const createPicture = /* GraphQL */ `
-  mutation CreatePicture(
-    $input: CreatePictureInput!
-    $condition: ModelPictureConditionInput
-  ) {
-    createPicture(input: $input, condition: $condition) {
-      id
-      name
-      owner
-      file {
-        bucket
-        region
-        key
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const updatePicture = /* GraphQL */ `
-  mutation UpdatePicture(
-    $input: UpdatePictureInput!
-    $condition: ModelPictureConditionInput
-  ) {
-    updatePicture(input: $input, condition: $condition) {
-      id
-      name
-      owner
-      file {
-        bucket
-        region
-        key
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deletePicture = /* GraphQL */ `
-  mutation DeletePicture(
-    $input: DeletePictureInput!
-    $condition: ModelPictureConditionInput
-  ) {
-    deletePicture(input: $input, condition: $condition) {
-      id
-      name
-      owner
-      file {
-        bucket
-        region
-        key
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -262,10 +260,11 @@ export const createListing = /* GraphQL */ `
   ) {
     createListing(input: $input, condition: $condition) {
       id
-      name
+      title
       price
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -273,9 +272,10 @@ export const createListing = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -284,15 +284,14 @@ export const createListing = /* GraphQL */ `
       description
       likes
       images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
+        url
       }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
       createdAt
       updatedAt
     }
@@ -305,10 +304,11 @@ export const updateListing = /* GraphQL */ `
   ) {
     updateListing(input: $input, condition: $condition) {
       id
-      name
+      title
       price
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -316,9 +316,10 @@ export const updateListing = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -327,15 +328,14 @@ export const updateListing = /* GraphQL */ `
       description
       likes
       images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
+        url
       }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
       createdAt
       updatedAt
     }
@@ -348,10 +348,11 @@ export const deleteListing = /* GraphQL */ `
   ) {
     deleteListing(input: $input, condition: $condition) {
       id
-      name
+      title
       price
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -359,9 +360,10 @@ export const deleteListing = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -370,15 +372,14 @@ export const deleteListing = /* GraphQL */ `
       description
       likes
       images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
+        url
       }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
       createdAt
       updatedAt
     }
@@ -394,6 +395,7 @@ export const createCartItem = /* GraphQL */ `
       listingID
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -401,9 +403,10 @@ export const createCartItem = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -424,6 +427,7 @@ export const updateCartItem = /* GraphQL */ `
       listingID
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -431,9 +435,10 @@ export const updateCartItem = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -454,6 +459,7 @@ export const deleteCartItem = /* GraphQL */ `
       listingID
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -461,9 +467,10 @@ export const deleteCartItem = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt

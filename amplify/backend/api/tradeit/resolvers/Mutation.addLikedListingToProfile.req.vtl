@@ -1,0 +1,17 @@
+{
+    "version": "2017-02-28",
+    "operation": "UpdateItem",
+    "key": {
+        "id": { "S": "$ctx.args.input.id"}
+    },
+    "update": {
+        "expression":"SET likedListings = list_append(likedListings, :newList)",
+        "expressionValues": {
+            ":newList" : {
+                "L": [
+                    { "M" : { "listingID": { "S": "$ctx.args.input.likedListings"}}}
+                ]
+            }
+        }
+    }
+}

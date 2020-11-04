@@ -13,7 +13,7 @@ export default useLocation = () => {
       } = await Location.getLastKnownPositionAsync();
       setLocation({ latitude, longitude });
     } catch (error) {
-      console.log(error);
+      console.log("error getting location", error);
     }
   };
 

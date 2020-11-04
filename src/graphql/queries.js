@@ -5,13 +5,16 @@ export const getUserProfile = /* GraphQL */ `
   query GetUserProfile($id: ID!) {
     getUserProfile(id: $id) {
       id
+      fullname
       listings {
         items {
           id
-          name
+          title
           price
           description
           likes
+          categoryId
+          quantity
           createdAt
           updatedAt
         }
@@ -27,9 +30,10 @@ export const getUserProfile = /* GraphQL */ `
         nextToken
       }
       picture {
-        bucket
-        region
-        key
+        url
+      }
+      likedListings {
+        listingID
       }
       createdAt
       updatedAt
@@ -46,6 +50,7 @@ export const listUserProfiles = /* GraphQL */ `
     listUserProfiles(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        fullname
         listings {
           nextToken
         }
@@ -53,52 +58,14 @@ export const listUserProfiles = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
         owner
-      }
-      nextToken
-    }
-  }
-`;
-export const getPicture = /* GraphQL */ `
-  query GetPicture($id: ID!) {
-    getPicture(id: $id) {
-      id
-      name
-      owner
-      file {
-        bucket
-        region
-        key
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const listPictures = /* GraphQL */ `
-  query ListPictures(
-    $filter: ModelPictureFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listPictures(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        name
-        owner
-        file {
-          bucket
-          region
-          key
-        }
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -108,10 +75,11 @@ export const getListing = /* GraphQL */ `
   query GetListing($id: ID!) {
     getListing(id: $id) {
       id
-      name
+      title
       price
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -119,9 +87,10 @@ export const getListing = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -130,15 +99,14 @@ export const getListing = /* GraphQL */ `
       description
       likes
       images {
-        items {
-          id
-          name
-          owner
-          createdAt
-          updatedAt
-        }
-        nextToken
+        url
       }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
       createdAt
       updatedAt
     }
@@ -153,10 +121,11 @@ export const listListings = /* GraphQL */ `
     listListings(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        name
+        title
         price
         owner {
           id
+          fullname
           createdAt
           updatedAt
           owner
@@ -164,8 +133,14 @@ export const listListings = /* GraphQL */ `
         description
         likes
         images {
-          nextToken
+          url
         }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
         createdAt
         updatedAt
       }
@@ -180,6 +155,7 @@ export const getCartItem = /* GraphQL */ `
       listingID
       owner {
         id
+        fullname
         listings {
           nextToken
         }
@@ -187,9 +163,10 @@ export const getCartItem = /* GraphQL */ `
           nextToken
         }
         picture {
-          bucket
-          region
-          key
+          url
+        }
+        likedListings {
+          listingID
         }
         createdAt
         updatedAt
@@ -212,6 +189,7 @@ export const listCartItems = /* GraphQL */ `
         listingID
         owner {
           id
+          fullname
           createdAt
           updatedAt
           owner
@@ -220,6 +198,49 @@ export const listCartItems = /* GraphQL */ `
         updatedAt
       }
       nextToken
+    }
+  }
+`;
+export const searchListings = /* GraphQL */ `
+  query SearchListings(
+    $filter: SearchableListingFilterInput
+    $sort: SearchableListingSortInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    searchListings(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        createdAt
+        updatedAt
+      }
+      nextToken
+      total
     }
   }
 `;

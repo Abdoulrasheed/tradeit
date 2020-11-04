@@ -1,6 +1,6 @@
 {
     "identityPoolName": "tradeit3afe77fb_identitypool_3afe77fb",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "tradei3afe77fb",
     "userPoolName": "tradeit3afe77fb_userpool_3afe77fb",
     "autoVerifiedAttributes": [

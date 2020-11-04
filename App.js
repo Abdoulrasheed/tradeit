@@ -10,6 +10,7 @@ import OfflineNotice from "./app/components/OfflineNotice";
 import AuthNavigator from "./app/navigation/AuthNavigator";
 import AuthContext from "./app/auth/context";
 import authStorage from "./app/api/storage";
+import authAPi from "./app/api/auth"
 import { navigationRef } from "./app/navigation/rootNavigation";
 import logger from "./app/utility/logger";
 
@@ -22,7 +23,14 @@ const App = () => {
 
   const restoreUser = async () => {
     const user = await authStorage.get("user");
-    if (user) setUser(user);
+    if (user) {
+      try {
+        const response = await authAPi._getUserProfileByID(user.value.sub)
+        setUser({...user.value, profile: response.data.getUserProfile})
+      } catch (e) {
+        setUser(user.value);
+      }
+    }
   };
 
   if (!isReady)

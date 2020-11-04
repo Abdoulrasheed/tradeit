@@ -16,7 +16,10 @@ const FeedNavigator = () => (
       name="Listings"
       component={ListingsScreen}
     />
-    <Stack.Screen name="ListingDetails" component={ListingDetailsScreen} />
+    <Stack.Screen name="ListingDetails"
+      component={ListingDetailsScreen}
+      options={({ route }) => ({ title: route.params.title })}
+    />
   </Stack.Navigator>
 );
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import * as Yup from "yup";
 
 import {
@@ -15,13 +15,17 @@ import FormImagePicker from "../components/forms/FormImagePicker";
 import listingsApi from "../api/listings";
 import useLocation from "../hooks/useLocation";
 import UploadScreen from "./UploadScreen";
+import useAuth from "../auth/useAuth";
+import useApi from "../hooks/useApi";
+import useListing from "../auth/useListing";
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required().min(1).label("Title"),
-  price: Yup.number().required().min(1).max(10000).label("Price"),
+  price: Yup.number().required().min(1).max(50000000).label("Price"),
+  quantity: Yup.number().required().min(1).label("Quantity"),
   description: Yup.string().label("Description"),
   category: Yup.object().required().nullable().label("Category"),
-  images: Yup.array().min(1, "Please select at least one image."),
+  images: Yup.array().max(10, "You cannot add more than 10 pictures, click one to remove it").min(1, "Please select at least one image."),
 });
 
 const categories = [
@@ -83,69 +87,75 @@ const categories = [
 
 function ListingEditScreen() {
   const location = useLocation();
-  const [uploadVisible, setUploadVisible] = useState(false);
+  const listingApi = useApi(listingsApi.addListing)
   const [progress, setProgress] = useState(0);
-
+  const { user } = useAuth()
+  const { api } = useListing()
+  
   const handleSubmit = async (listing, { resetForm }) => {
     setProgress(0);
-    setUploadVisible(true);
-    const result = await listingsApi.addListing(
-      { ...listing, location },
-      (progress) => setProgress(progress)
-    );
-
-    if (!result.ok) {
-      setUploadVisible(false);
-      return alert("Could not save the listing");
-    }
-
+    await listingApi.request(
+      { ...listing, userID: user.profile.id, location },
+        (progress) => setProgress(progress)
+      );
     resetForm();
+   api.refresh()
   };
 
   return (
     <Screen style={styles.container}>
-      <UploadScreen
-        onDone={() => setUploadVisible(false)}
-        progress={progress}
-        visible={uploadVisible}
-      />
-      <Form
-        initialValues={{
-          title: "",
-          price: "",
-          description: "",
-          category: null,
-          images: [],
-        }}
-        onSubmit={handleSubmit}
-        validationSchema={validationSchema}
+        <UploadScreen
+          onDone={() => listingApi.setLoading(false)}
+          progress={progress}
+          visible={listingApi.loading}
+        />
+        <Form
+            initialValues={{
+              title: "",
+              price: "",
+              description: "",
+              category: null,
+              images: [],
+              quantity: ""
+          }}
+          onSubmit={handleSubmit}
+          validationSchema={validationSchema}
       >
-        <FormImagePicker name="images" />
-        <FormField maxLength={255} name="title" placeholder="Title" />
-        <FormField
-          keyboardType="numeric"
-          maxLength={8}
-          name="price"
-          placeholder="Price"
-          width={120}
-        />
-        <Picker
-          items={categories}
-          name="category"
-          numberOfColumns={3}
-          PickerItemComponent={CategoryPickerItem}
-          placeholder="Category"
-          width="50%"
-        />
-        <FormField
-          maxLength={255}
-          multiline
-          name="description"
-          numberOfLines={3}
-          placeholder="Description"
-        />
-        <SubmitButton title="Post" />
-      </Form>
+        <ScrollView>
+          <FormImagePicker name="images" />
+          <FormField maxLength={255} name="title" placeholder="Title" />
+          <FormField
+            keyboardType="numeric"
+            maxLength={8}
+            name="price"
+            placeholder="Price"
+            width="50%"
+            />
+          <FormField
+            keyboardType="numeric"
+            maxLength={8}
+            name="quantity"
+            placeholder="Quantity in store"
+            width="50%"
+          />
+          <Picker
+            items={categories}
+            name="category"
+            numberOfColumns={3}
+            PickerItemComponent={CategoryPickerItem}
+            placeholder="Category"
+            width="50%"
+          />
+          <FormField
+            maxLength={255}
+            multiline
+            name="description"
+            numberOfLines={3}
+            placeholder="Description"
+          />
+          </ScrollView>
+          <SubmitButton title="Post" />
+          </Form>
     </Screen>
   );
 }

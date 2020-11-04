@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 import Constants from "expo-constants";
@@ -24,7 +23,7 @@ const Header = ({ listings }) => {
           style={styles.search}
           width={300}
         />
-        <FontAwesome5 name="hands-helping" size={24} color={colors.light} />
+        <MaterialCommunityIcons name="message-text" size={32} color={colors.light} />
       </View>
       <Modal
         animationInTiming={0}
