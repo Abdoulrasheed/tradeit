@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "tradeit3afe77fb_identitypool_3afe77fb",
+    "identityPoolName": "tradeit86253e05_identitypool_86253e05",
     "allowUnauthenticatedIdentities": true,
-    "resourceNameTruncated": "tradei3afe77fb",
-    "userPoolName": "tradeit3afe77fb_userpool_3afe77fb",
+    "resourceNameTruncated": "tradei86253e05",
+    "userPoolName": "tradeit86253e05_userpool_86253e05",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,10 +28,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "tradei3afe77fb_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "tradei86253e05_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "3afe77fb",
-    "resourceName": "tradeit3afe77fb",
+    "sharedId": "86253e05",
+    "resourceName": "tradeit86253e05",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -49,12 +49,7 @@
     "usernameAttributes": [
         "email, phone_number"
     ],
-    "triggers": "{}",
     "userPoolGroupList": [],
     "serviceName": "Cognito",
-    "parentStack": {
-        "Ref": "AWS::StackId"
-    },
-    "permissions": [],
     "dependsOn": []
 }

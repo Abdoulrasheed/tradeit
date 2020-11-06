@@ -37,6 +37,14 @@ export const addLike = /* GraphQL */ `
       }
       categoryId
       quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -67,7 +75,6 @@ export const createUserProfile = /* GraphQL */ `
       cartItem {
         items {
           id
-          listingID
           createdAt
           updatedAt
         }
@@ -110,7 +117,6 @@ export const updateUserProfile = /* GraphQL */ `
       cartItem {
         items {
           id
-          listingID
           createdAt
           updatedAt
         }
@@ -153,7 +159,6 @@ export const deleteUserProfile = /* GraphQL */ `
       cartItem {
         items {
           id
-          listingID
           createdAt
           updatedAt
         }
@@ -210,6 +215,14 @@ export const createListing = /* GraphQL */ `
       }
       categoryId
       quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -254,6 +267,14 @@ export const updateListing = /* GraphQL */ `
       }
       categoryId
       quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -298,6 +319,14 @@ export const deleteListing = /* GraphQL */ `
       }
       categoryId
       quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -310,8 +339,35 @@ export const createCartItem = /* GraphQL */ `
   ) {
     createCartItem(input: $input, condition: $condition) {
       id
-      listingID
-      owner {
+      listing {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        carts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      profile {
         id
         fullname
         listings {
@@ -342,8 +398,35 @@ export const updateCartItem = /* GraphQL */ `
   ) {
     updateCartItem(input: $input, condition: $condition) {
       id
-      listingID
-      owner {
+      listing {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        carts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      profile {
         id
         fullname
         listings {
@@ -374,8 +457,35 @@ export const deleteCartItem = /* GraphQL */ `
   ) {
     deleteCartItem(input: $input, condition: $condition) {
       id
-      listingID
-      owner {
+      listing {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        carts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      profile {
         id
         fullname
         listings {

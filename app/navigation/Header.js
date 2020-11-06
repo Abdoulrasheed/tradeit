@@ -1,14 +1,25 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
+import { View, StyleSheet, Text, TouchableWithoutFeedback, Dimensions } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 import Constants from "expo-constants";
+import { WaveIndicator as Loader } from 'react-native-indicators';
 
 import colors from "../config/colors";
 import TextInput from "../components/TextInput";
 
+
+const dim = Dimensions.get("window");
+
 const Header = ({ listings }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [searching, setSearching] = useState(true);
+
+  const onChange = (values) => {
+    if (values.length > 2) {
+      console.log(values);
+    }
+  }
 
   return (
     <>
@@ -19,9 +30,10 @@ const Header = ({ listings }) => {
           onSelectionChange={() => setModalVisible(true)}
           onFocus={() => setModalVisible(true)}
           onBlur={() => setModalVisible(false)}
+          onChangeText={(val) => onChange(val)}
           placeholder="Search..."
           style={styles.search}
-          width={300}
+          width={dim.width - 110}
         />
         <MaterialCommunityIcons name="message-text" size={32} color={colors.light} />
       </View>
@@ -48,11 +60,9 @@ const Header = ({ listings }) => {
           </TouchableWithoutFeedback>
           <View>
             <Text>Hello</Text>
-            <Text>Hello</Text>
-            <Text>Hello</Text>
-            <Text>Hello</Text>
-            <Text>Hello</Text>
-            <Text>Hello</Text>
+            {
+              searching && <Loader style={styles.loader} color={colors.primary} count={10} size={60} />
+            }
           </View>
         </View>
       </Modal>
@@ -70,10 +80,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginRight: 10,
   },
+  loader: {
+    alignSelf: "center",
+    marginTop: 100
+  },
   modal: {
+    alignSelf: "center",
     backgroundColor: colors.light,
-    marginTop: Constants.statusBarHeight * 20,
-    height: 400,
+    height: dim.height - 120,
+    marginTop: dim.height - Constants.statusBarHeight,
+    paddingHorizontal: 15,
+    width: dim.width,
   },
   search: {
     backgroundColor: colors.light,

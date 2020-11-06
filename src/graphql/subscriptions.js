@@ -23,7 +23,6 @@ export const onCreateUserProfile = /* GraphQL */ `
       cartItem {
         items {
           id
-          listingID
           createdAt
           updatedAt
         }
@@ -63,7 +62,6 @@ export const onUpdateUserProfile = /* GraphQL */ `
       cartItem {
         items {
           id
-          listingID
           createdAt
           updatedAt
         }
@@ -103,7 +101,6 @@ export const onDeleteUserProfile = /* GraphQL */ `
       cartItem {
         items {
           id
-          listingID
           createdAt
           updatedAt
         }
@@ -157,6 +154,14 @@ export const onCreateListing = /* GraphQL */ `
       }
       categoryId
       quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -198,6 +203,14 @@ export const onUpdateListing = /* GraphQL */ `
       }
       categoryId
       quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -239,6 +252,14 @@ export const onDeleteListing = /* GraphQL */ `
       }
       categoryId
       quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -248,8 +269,35 @@ export const onCreateCartItem = /* GraphQL */ `
   subscription OnCreateCartItem {
     onCreateCartItem {
       id
-      listingID
-      owner {
+      listing {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        carts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      profile {
         id
         fullname
         listings {
@@ -277,8 +325,35 @@ export const onUpdateCartItem = /* GraphQL */ `
   subscription OnUpdateCartItem {
     onUpdateCartItem {
       id
-      listingID
-      owner {
+      listing {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        carts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      profile {
         id
         fullname
         listings {
@@ -306,8 +381,35 @@ export const onDeleteCartItem = /* GraphQL */ `
   subscription OnDeleteCartItem {
     onDeleteCartItem {
       id
-      listingID
-      owner {
+      listing {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        carts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      profile {
         id
         fullname
         listings {

@@ -1,6 +1,6 @@
 {
   "auth": {
-    "tradeit3afe77fb": {
+    "tradeit86253e05": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
@@ -16,7 +16,7 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authtradeit3afe77fb"
+              "userPoolId": "authtradeit86253e05"
             }
           },
           "additionalAuthenticationProviders": []
@@ -25,7 +25,7 @@
     }
   },
   "storage": {
-    "s33b4ae5f4": {
+    "tradeitlatest": {
       "service": "S3",
       "providerPlugin": "awscloudformation"
     }

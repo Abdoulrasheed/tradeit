@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import { StyleSheet, View, FlatList, Alert } from "react-native";
 
 import { ListItem, ListItemSeparator } from "../components/lists";
 import colors from "../config/colors";
@@ -9,13 +9,6 @@ import Screen from "../components/Screen";
 import useAuth from "../auth/useAuth";
 
 const menuItems = [
-  {
-    title: "My Listings",
-    icon: {
-      name: "format-list-bulleted",
-      backgroundColor: colors.primary,
-    },
-  },
   {
     title: "My Messages",
     icon: {
@@ -28,13 +21,26 @@ const menuItems = [
 
 function AccountScreen({ navigation }) {
   const { user, logOut } = useAuth();
+  const handleLogOut = () => {
+    Alert.alert("Exit", "Are you sure you wants to logout ?", [
+      {
+        text: 'Yes',
+        onPress: () => logOut(),
+      },
+      {
+        text: 'No',
+        style: 'cancel', onPress: false
+      }
+    ])
+  }
   return (
     <Screen style={styles.screen}>
       <View style={styles.container}>
         <ListItem
           title={user.name}
           subTitle={user.email}
-          image={require("../assets/mosh.jpg")}
+          image={user.profile.picture}
+          defaultPicture={require("../assets/person.jpg")}
         />
       </View>
       <View style={styles.container}>
@@ -59,18 +65,21 @@ function AccountScreen({ navigation }) {
       <ListItem
         title="Log Out"
         IconComponent={<Icon name="logout" backgroundColor="#ffe66d" />}
-        onPress={() => logOut()}
+        onPress={() => handleLogOut()}
       />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  cancel: {
+    
+  },
   screen: {
     backgroundColor: colors.light,
   },
   container: {
-    marginVertical: 20,
+    marginVertical: 10,
   },
 });
 

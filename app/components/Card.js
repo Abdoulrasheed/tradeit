@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { Image } from "react-native-expo-image-cache";
 import { Ionicons } from '@expo/vector-icons';
-import listingApi from "../api/listings"
+import produce from 'immer'
 
+import listingApi from "../api/listings"
 import Text from "./Text";
 import colors from "../config/colors";
 import thousandSep from "../utility/number";
+import useAuth from "../auth/useAuth";
 
 function Card({
   image,
@@ -22,12 +24,18 @@ function Card({
  }) {
   const [liked, setLiked] = useState(aliked);
   const [likes, setLikes] = useState(currentLikes);
+  const { user, logIn: updateProfile } = useAuth()
   
   const handleLike = async () => {
     const like = liked ? -1 : 1
     setLiked(!liked);
-    const newLikes = await listingApi.likeListing(listingID, like, profileID);
-    setLikes(newLikes);
+    const listing = await listingApi.likeListing(listingID, like, profileID);
+    setLikes(listing.likes);
+
+    const updatedProfile = produce(user, draft => {
+      draft.profile.likedListings = listing.likedListings
+    })
+    updateProfile(updatedProfile)
   }
 
   const iconSize = 24

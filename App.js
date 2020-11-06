@@ -25,10 +25,14 @@ const App = () => {
     const user = await authStorage.get("user");
     if (user) {
       try {
-        const response = await authAPi._getUserProfileByID(user.value.sub)
+        const response = await authAPi._getUserProfileByID(user.value.profile.id)
         setUser({...user.value, profile: response.data.getUserProfile})
       } catch (e) {
-        setUser(user.value);
+        if (user.value) {
+          setUser(user.value);
+        } else {
+          setUser(user)
+        }
       }
     }
   };

@@ -14,6 +14,7 @@ import CartScreen from "../screens/CartScreen";
 import MyStore from "../screens/MyStore";
 import { ListingContext } from "../auth/context"
 import listingsApi from "../api/listings";
+import storage from "../api/storage";
 
 
 const Tab = createBottomTabNavigator();
@@ -31,12 +32,17 @@ const AppNavigator = () => {
     ready()
   }, []);
   
-  const ready = async () => {
+  const ready = async (coords, meters) => {
     setLoading(true)
+    if (!coords) {
+      const loc = await storage.get("location")
+      coords = loc.value
+    }
+
     try {
-      const listings = await listingsApi.getListings()
-      setNextToken(listings.data.listListings.nextToken)
-      setListings(listings.data.listListings.items)
+      const listings = await listingsApi.getListings({ coords, meters })
+      setNextToken(listings.data.nearbyListings.nextToken)
+      setListings(listings.data.nearbyListings.items)
       setError(false)
     } catch (error) {
       setError(true)
@@ -44,12 +50,12 @@ const AppNavigator = () => {
     setLoading(false)
   }
 
-  const loadMore = async (nextToken) => {
+  const loadMore = async (nextToken, coords, meters) => {
     setLoadingMore(true)
     try {
-      const newListings = await listingsApi.getListings(nextToken)
-      setNextToken(newListings.data.listListings.nextToken)
-      const lists = listings.concat(newListings.data.listListings.items)
+      const newListings = await listingsApi.getListings({ nextToken, coords, meters })
+      setNextToken(newListings.data.nearbyListings.nextToken)
+      const lists = listings.concat(newListings.data.nearbyListings.items)
       setListings(lists)
     } catch (error) {
       setError(true)

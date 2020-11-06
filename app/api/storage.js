@@ -30,7 +30,7 @@ const get = async (key) => {
 
     if (!item) return null;
 
-    if (key === "user") return item;
+    if (key === "user" || key === "location") return item;
 
     if (isExpired(item)) {
       // Command Query Separation (CQS)

@@ -9,7 +9,7 @@ type UserProfile
   id: ID!
   fullname: String
   listings: [Listing] @connection(name: "UserListing")
-  cartItem: [CartItem] @connection
+  cartItem: [CartItem] @connection(name: "UserProfileCartItems")
   picture: Image
   likedListings: [ListingLike]
 }
@@ -25,12 +25,13 @@ type Listing @model @searchable {
   location: Location
   categoryId: String
   quantity: Int
+  carts: [CartItem] @connection(name: "ListingCartItems")
 }
 
 type CartItem @model {
   id: ID!
-  listingID: String!
-  owner: UserProfile! @connection(name: "UserListing")
+  listing: Listing! @connection(name: "ListingCartItems")
+  profile: UserProfile! @connection(name: "UserProfileCartItems")
 }
 
 type Image {
@@ -48,6 +49,26 @@ type Location {
 
 type Mutation {
   addLike(input: AddLikeInput): Listing
+}
+
+type Query {
+  nearbyListings(
+    location: LocationInput!
+    m: Int
+    limit: Int
+    nextToken: String
+  ): ModelListingPointConnection
+}
+
+input LocationInput {
+  lat: Float!
+  lon: Float!
+}
+
+type ModelListingPointConnection {
+  items: [Listing]
+  total: Int
+  nextToken: String
 }
 
 input AddLikeInput {

@@ -33,7 +33,7 @@ function LoginScreen(props) {
       if (err.message) {
         setLoginFailed(true);
       } else {
-        showToast("registration error !");
+        showToast("login error !");
       }
       setLoginFailed(true)
     }

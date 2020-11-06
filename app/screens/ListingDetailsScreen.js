@@ -10,6 +10,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Dimensions } from "react-native";
 import Carousel from "react-native-snap-carousel";
 import { Image } from "react-native-expo-image-cache";
+import produce from 'immer'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import colors from "../config/colors";
 import ContactSellerForm from "../components/ContactSellerForm";
@@ -19,16 +21,20 @@ import thousandSep from "../utility/number";
 import listingApi from "../api/listings"
 import cartApi from "../api/cart"
 import useAuth from "../auth/useAuth";
-import { isLiked } from "../utility/shortcuts";
+import { isLiked, isInCart } from "../utility/shortcuts";
+import { showToast } from "../utility/toast";
 
 const dim = Dimensions.get("window");
 
 function ListingDetailsScreen({ route }) {
   const listing = route.params;
+
+  console.log(listing);
   
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(listing.likes);
-  const { user } = useAuth()
+  const [inCart, setInCart] = useState(false);
+  const { user, logIn: updateProfile } = useAuth()
 
   const full = {
     height: dim.height,
@@ -39,19 +45,30 @@ function ListingDetailsScreen({ route }) {
   const [fullscreen, setFullscreen] = useState(null);
 
   useEffect(() => {
-    const l = isLiked(listing.id, user.profile.likedListings)
-    setLiked(l)
+    const like = isLiked(listing.id, user.profile.likedListings)
+    const cart = isInCart(listing.id, user.profile.cartItem.items)
+    setLiked(like)
+    setInCart(cart)
   }, []);
 
   const handleLike = async () => {
     const like = liked ? -1 : 1
     setLiked(!liked)
-    const newLikes = await listingApi.likeListing(listing.id, like, user.profile.id)
-    setLikes(newLikes)
+    const data = await listingApi.likeListing(listing.id, like, user.profile.id)
+    setLikes(data.likes)
+    const updatedProfile = produce(user, draft => {
+      draft.profile.likedListings = data.likedListings
+    })
+    updateProfile(updatedProfile)
   }
 
   const handleCart = async () => {
-    const cart = await cartApi.addToCart(listing.id, user.profile.id)
+    const carts = await cartApi.addToCart(listing.id, user.profile.id)
+    const updatedProfile = produce(user, draft => {
+      draft.profile.cartItem.items = carts
+    })
+    updateProfile(updatedProfile)
+    showToast("Successfully added to cart")
   }
 
   const iconSize = fullscreen ? 40 : 20
@@ -94,8 +111,8 @@ function ListingDetailsScreen({ route }) {
     >
       <Carousel
         autoplay={true}
-        autoplayDelay={1000}
-        autoplayInterval={2000}
+        autoplayDelay={3000}
+        autoplayInterval={2500}
         containerStyle={styles.slider}
         data={listing.images}
         firstItem={1}
@@ -110,10 +127,25 @@ function ListingDetailsScreen({ route }) {
           <View>
             <Text style={styles.title}>{listing.title}</Text>
             <Text style={styles.price}>{"\u20A6 " + thousandSep(listing.price)}</Text>
+            <View style={styles.subDetail}>
+              <MaterialCommunityIcons name="store" size={24} color={colors.primary} />
+              <Text style={styles.quantity}>{listing.quantity} in store</Text>
+            </View>
           </View>
           <View style={styles.cartContainer}>
-            <Ionicons name="ios-cart" size={20} color={colors.primary} onPress={handleCart} />
-            <Text style={styles.iconText}>Add to cart</Text>
+            {
+              inCart ? <Ionicons
+              name="md-checkmark-circle"
+              size={20}
+              color={colors.secondary}
+            />:  <Ionicons
+              name="ios-cart"
+              size={20}
+              color={colors.primary}
+              onPress={handleCart}
+            />
+            }
+            <Text style={styles.iconText}>{inCart ? "Added" : "Add to cart"}</Text>
           </View>
           <TouchableOpacity onPress={handleLike}>
             <View style={styles.likesContainer}>
@@ -125,9 +157,10 @@ function ListingDetailsScreen({ route }) {
         </View>
         <View style={styles.userContainer}>
           <ListItem
-            image={require("../assets/mosh.jpg")}
-            title="Mosh Hamedani"
-            subTitle="5 Listings"
+            image={user.profile.picture}
+            defaultPicture={require("../assets/person.jpg")}
+            title={user.profile.fullname}
+            subTitle={`${user.profile.listings.items.length} Listing(s)`}
           />
         </View>
         <ContactSellerForm listing={listing} />
@@ -177,13 +210,18 @@ const styles = StyleSheet.create({
     color: colors.medium,
   },
   price: {
-    color: colors.dark,
+    color: colors.primary,
     fontWeight: "bold",
     fontSize: 20,
     marginVertical: 10,
   },
   slider: {
     marginTop: 15,
+  },
+  subDetail: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: -2,
   },
   title: {
     fontSize: 24,
@@ -194,6 +232,11 @@ const styles = StyleSheet.create({
   userContainer: {
     marginVertical: 40,
   },
+  quantity: {
+    fontSize: 13,
+    textAlign: "center",
+    marginLeft: 5
+  }
 });
 
 export default ListingDetailsScreen;

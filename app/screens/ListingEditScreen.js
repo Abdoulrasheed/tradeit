@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import * as Yup from "yup";
+import { usePermissions } from "expo-permissions";
+import * as Permissions from 'expo-permissions';
 
 import {
   Form,
@@ -18,6 +20,7 @@ import UploadScreen from "./UploadScreen";
 import useAuth from "../auth/useAuth";
 import useApi from "../hooks/useApi";
 import useListing from "../auth/useListing";
+import PermissionModal from "../components/PermissionModal";
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required().min(1).label("Title"),
@@ -29,6 +32,18 @@ const validationSchema = Yup.object().shape({
 });
 
 const categories = [
+  {
+    backgroundColor: "#778ca3",
+    icon: "food",
+    label: "Food",
+    value: 9,
+  },
+  {
+    backgroundColor: "#778ca3",
+    icon: "phone",
+    label: "Phones",
+    value: 9,
+  },
   {
     backgroundColor: "#fc5c65",
     icon: "floor-lamp",
@@ -78,10 +93,16 @@ const categories = [
     value: 8,
   },
   {
+    backgroundColor: "#a55eea",
+    icon: "laptop",
+    label: "Computers",
+    value: 8,
+  },
+  {
     backgroundColor: "#778ca3",
     icon: "application",
     label: "Other",
-    value: 9,
+    value: 10,
   },
 ];
 
@@ -89,8 +110,22 @@ function ListingEditScreen() {
   const location = useLocation();
   const listingApi = useApi(listingsApi.addListing)
   const [progress, setProgress] = useState(0);
+  const [modalVisible, setmodalVisible] = useState(false);
+  const [permission, askForPermission] = usePermissions(Permissions.CAMERA_ROLL);
   const { user } = useAuth()
   const { api } = useListing()
+  
+  useEffect(() => {
+    if (!permission || permission.status !== 'granted') {
+      setmodalVisible(true)
+    } else {
+      setmodalVisible(false)
+     }
+  }, [permission]);
+
+  const requestPermission = () => {
+    askForPermission()
+  }
   
   const handleSubmit = async (listing, { resetForm }) => {
     setProgress(0);
@@ -99,7 +134,7 @@ function ListingEditScreen() {
         (progress) => setProgress(progress)
       );
     resetForm();
-   api.refresh()
+    api.refresh()
   };
 
   return (
@@ -155,7 +190,13 @@ function ListingEditScreen() {
           />
           </ScrollView>
           <SubmitButton title="Post" />
-          </Form>
+      </Form>
+
+      <PermissionModal
+        description="Tradeit would like to access your gallary, click allow."
+        onPress={requestPermission}
+        visible={modalVisible}
+      />
     </Screen>
   );
 }

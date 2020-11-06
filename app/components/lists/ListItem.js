@@ -1,7 +1,8 @@
 import React from "react";
-import { View, StyleSheet, Image, TouchableHighlight } from "react-native";
+import { View, StyleSheet, TouchableHighlight, Image as RNImage } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Swipeable from "react-native-gesture-handler/Swipeable";
+import { Image } from "react-native-expo-image-cache";
 
 import Text from "../Text";
 import colors from "../../config/colors";
@@ -9,6 +10,9 @@ import colors from "../../config/colors";
 function ListItem({
   title,
   subTitle,
+  likes,
+  defaultPicture,
+  quantity,
   image,
   IconComponent,
   onPress,
@@ -19,16 +23,23 @@ function ListItem({
       <TouchableHighlight underlayColor={colors.light} onPress={onPress}>
         <View style={styles.container}>
           {IconComponent}
-          {image && <Image style={styles.image} source={image} />}
+          {(image || defaultPicture) && (image ?
+            <Image style={styles.image} tint="light" preview={{ uri: image }} uri={image} /> : 
+            <RNImage style={styles.image} tint="light" source={defaultPicture} /> 
+          )}
           <View style={styles.detailsContainer}>
             <Text style={styles.title} numberOfLines={1}>
               {title}
             </Text>
-            {subTitle && (
+            {subTitle ?
               <Text style={styles.subTitle} numberOfLines={2}>
                 {subTitle}
               </Text>
-            )}
+            : null}
+            {likes && <View style={styles.textContainer}>
+              <Text style={styles.smallText}>{likes} likes</Text>
+              <Text style={[styles.smallText, {marginLeft: 100}]}>{quantity} in store</Text>
+            </View>}
           </View>
           <MaterialCommunityIcons
             color={colors.medium}
@@ -58,12 +69,19 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 35,
   },
+  smallText: {
+    fontSize: 12,
+    color: colors.primary
+  },
   subTitle: {
     color: colors.medium,
   },
   title: {
     fontWeight: "500",
   },
+  textContainer: {
+    flexDirection: "row",
+  }
 });
 
 export default ListItem;

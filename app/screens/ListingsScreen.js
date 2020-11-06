@@ -1,8 +1,12 @@
-import React, { useRef, useState } from "react";
-import { FlatList, StyleSheet, RefreshControl, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { FlatList, StyleSheet, RefreshControl, View, Alert } from "react-native";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { WaveIndicator as Loader } from 'react-native-indicators';
-
+import { usePermissions } from "expo-permissions";
+import * as Permissions from 'expo-permissions';
+import { Slider } from "@miblanchard/react-native-slider";
+import { FontAwesome5 } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 
 import ActivityIndicator from "../components/ActivityIndicator";
 import Button from "../components/Button";
@@ -16,15 +20,66 @@ import CarouselItem from "../components/CarouselItem";
 import useListing from "../auth/useListing";
 import useAuth from "../auth/useAuth";
 import { isLiked } from "../utility/shortcuts"
+import PermissionModal from "../components/PermissionModal";
+import { showToast } from "../utility/toast";
+import storage from "../api/storage";
 
 const windowWidth = Dimensions.get("window").width;
+
+const MINIMUM_RANGE = 5000 // 5KM
+const MAXIMUM_RANGE = 100000 // 100KM
 
 function ListingsScreen({ navigation }) {
   const [activeSlide, setActiveSlide] = useState(1);
   const [refreshing, setRefreshing] = useState();
+  const [modalVisible, setmodalVisible] = useState(false);
+  const [permission, askForPermission] = usePermissions(Permissions.LOCATION);
+  const [meters, setMeters] = useState(10000);
+  const [location, setLocation] = useState();
+  const [requestOpenLocation, setRequestOpenLocation] = useState(false);
   const sliderRef = useRef()
   const { api } = useListing()
-  const { user, logIn: updateProfile } = useAuth()
+  const { user } = useAuth()
+
+  useEffect(() => {
+    if (!permission || permission.status !== 'granted') {
+      setmodalVisible(true)
+    } else {
+      setmodalVisible(false)
+      recheckLocationService()
+     }
+  }, [permission]);
+
+  const requestPermission = async () => {
+    askForPermission()
+    if (permission.status !== 'granted') {
+      const locEnabled = await Location.hasServicesEnabledAsync()
+      if (!locEnabled) {
+        setRequestOpenLocation(true)
+      }
+    }
+  }
+
+  const handleSliderRelease = async () => {
+    setRefreshing(true)
+    await api.refresh(location, meters[0])
+    setRefreshing(false)
+  }
+
+  const recheckLocationService = async () => {
+    const locEnabled = await Location.hasServicesEnabledAsync()
+    setRequestOpenLocation(!locEnabled)
+    if (!locEnabled) {
+      showToast("Please turn on location")
+    } else {
+      const {
+        coords: { latitude, longitude },
+      } = await Location.getLastKnownPositionAsync();
+      setLocation({ latitude, longitude })
+      storage.set("location", { latitude, longitude })
+      handleSliderRelease()
+    }
+  }
 
   const renderItem = ({ item }) => {
     return <CarouselItem
@@ -35,18 +90,21 @@ function ListingsScreen({ navigation }) {
 
   const handleLoadMore = () => {
     if (api.nextToken)
-      api.loadMore(api.nextToken)
+      api.loadMore(api.nextToken, location, meters[0])
   }
 
-  const handleRefresh = () => {
-    api.refresh()
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await api.refresh(location, meters[0])
+    setRefreshing(false)
   }
 
   const carousel = <View style={styles.carouselContainer}>
     <Carousel
       autoplay={true}
-      autoplayDelay={8000}
+      autoplayDelay={3000}
       autoplayInterval={3000}
+      loop
       containerStyle={styles.slider}
       data={api.listings.slice(0, 8)}
       firstItem={1}
@@ -82,8 +140,33 @@ function ListingsScreen({ navigation }) {
             <Button title="Retry" onPress={api.refresh} />
           </>
         )}
-        {api.listings.length == 0 && <Text style={styles.errorText}>loading nearest listings</Text>}
-
+        {api.listings.length == 0 && <Text
+          style={styles.errorText}>loading nearest listings</Text>
+        }
+        <View style={styles.sliderContainer}>
+          <View style={styles.locationDetail}>
+            <Text
+              style={styles.distanceText}>
+              Distance Range : {meters / 1000} km
+            </Text>
+          </View>
+          <Slider
+            minimumValue={MINIMUM_RANGE}
+            maximumValue={MAXIMUM_RANGE}
+            value={meters}
+            trackStyle={styles.sliderTrack}
+            minimumTrackTintColor="#212121"
+            renderThumbComponent={()=> <FontAwesome5
+              name="map-marker"
+              size={25}
+              color="#ffd903"
+            />}
+            step={100} // step by half KM
+            onValueChange={(val) => setMeters(val)}
+            onSlidingComplete={handleSliderRelease}
+          />
+        </View>
+        
         <FlatList
           contentContainerStyle={styles.cardContainer}
           data={api.listings}
@@ -112,17 +195,29 @@ function ListingsScreen({ navigation }) {
               onPress={() => navigation.navigate(routes.LISTING_DETAILS, item)}
               likes={item.likes}
               listingID={item.id}
-              profileID={user.sub}
+              profileID={user.profile.id}
               liked={isLiked(item.id, user.profile.likedListings)}
             />
           )}
         />
-        </Screen>
-      </>
+      </Screen>
+      
+      <PermissionModal
+        buttonText={modalVisible ? "ALLOW" : requestOpenLocation ? "I'M DONE" : ""}
+        description={
+          modalVisible ? "Tradeit would like to use your device location in order to show nearby listings." :
+            requestOpenLocation ? "Your location service is turned off, please turn it on" : false}
+        onPress={modalVisible ? requestPermission : requestOpenLocation ? recheckLocationService : {}}
+        visible={modalVisible || requestOpenLocation}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  distanceText: {
+    color: colors.white,
+  },
   errorText: {
     color: colors.light,
     fontSize: 14,
@@ -144,6 +239,9 @@ const styles = StyleSheet.create({
   cardsFooter: {
     marginBottom: 15
   },
+  locationDetail: {
+    flexDirection: "row",
+  },
   paginationContainer: {
     paddingVertical: 5
   },
@@ -157,6 +255,23 @@ const styles = StyleSheet.create({
   },
   slider: {
     marginTop: 15,
+  },
+  sliderContainer: {
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    marginLeft: 5,
+    marginBottom: 30,
+    paddingHorizontal: 33,
+    width: windowWidth
+  },
+  sliderTrack: {
+    height: 10,
+    borderRadius: 4,
+    backgroundColor: 'white',
+    shadowColor: colors.black,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 1,
+    shadowOpacity: 0.15,
   },
 });
 

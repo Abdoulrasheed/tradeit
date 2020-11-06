@@ -1,8 +1,8 @@
 import { API, graphqlOperation, Storage } from "aws-amplify";
-import { addLike, createListing, updateUserProfile } from "../../src/graphql/mutations";
-import { listListings } from "./queries";
+import { addLike, createListing, deleteListing } from "../../src/graphql/mutations";
 import config from "../../aws-exports";
-import { getListing } from "../../src/graphql/queries";
+import { getListing, nearbyListings } from "../../src/graphql/queries";
+import { updateUserProfile } from "./mutations"
 import profileApi from "./auth"
 
 const {
@@ -10,14 +10,19 @@ const {
   aws_user_files_s3_bucket: bucket,
 } = config;
 
-const getListings = async (nextToken) => {
-  const variables = {
-      nextToken,
+const getListings = async ({ nextToken, coords, meters = 10000 }) => {
+  try {
+    const variables = {
+      location: { lat: coords.latitude, lon: coords.longitude },
       limit: 10,
-      sortDirection: "DESC",
-    }
-  const response = await API.graphql(graphqlOperation(listListings, variables))
-  return response
+      m: meters,
+      nextToken,
+      }
+    const response = await API.graphql(graphqlOperation(nearbyListings, variables))
+    return response
+  } catch (error) {
+    console.log("error gettings listings", error);
+  }
 }
 
 export const addListing = async (listingData, onUploadProgress) => {
@@ -30,6 +35,12 @@ export const addListing = async (listingData, onUploadProgress) => {
   const response = await API.graphql(graphqlOperation(getListing, { id: listingID }))
   return response.data.getListing
 };
+
+
+const removeListing = async (listingID) => {
+  const input = { input: { id: listingID }}
+  const res = await API.graphql(graphqlOperation(deleteListing, input))
+}
 
 
 const _createListing = async (listing) => {
@@ -81,7 +92,7 @@ const uploadToS3 = async (listing, onUploadProgress) => {
       await Storage.put(key, blob, {
           contentType: "image/jpeg",
           progressCallback({ loaded, total }) { 
-            onUploadProgress(loaded / total);
+            onUploadProgress(listing.images.length / (loaded / total));
           },
       });
     }))
@@ -103,7 +114,7 @@ const likeListing = async (listingID, like, profileID ) => {
     // update list of liked listings
     const newLike = { listingID: listingID }
     const profile = await profileApi._getUserProfileByID(profileID)
-    const oldLikes = profile.data.getUserProfile.likedListings
+    const oldLikes = profile.data.getUserProfile.likedListings || []
     let data;
     if (like > 0) {
       // add a like
@@ -124,8 +135,11 @@ const likeListing = async (listingID, like, profileID ) => {
       }
     }
 
-    API.graphql(graphqlOperation(updateUserProfile, data))
-    return response.data.addLike.likes
+    const prof = await API.graphql(graphqlOperation(updateUserProfile, data))
+    return {
+      likes: response.data.addLike.likes,
+      likedListings: prof.data.updateUserProfile.likedListings
+    }
   } catch (error) {
     console.log("error adding a like", error);
   }
@@ -134,5 +148,6 @@ const likeListing = async (listingID, like, profileID ) => {
 export default {
   addListing,
   getListings,
-  likeListing
+  likeListing,
+  removeListing
 };

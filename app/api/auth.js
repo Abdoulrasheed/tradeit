@@ -1,10 +1,6 @@
 import { Auth, graphqlOperation, API } from "aws-amplify";
-import {
-  createUserProfile,
-  updateUserProfile,
-} from "../../src/graphql/mutations";
-import { getUserProfile } from "../../src/graphql/queries";
-import { listUserProfiles } from "../api/queries";
+import { createUserProfile } from "../../src/graphql/mutations";
+import { listUserProfiles, getUserProfile } from "../api/queries";
 
 const createUser = async (data) => {
   const user = {

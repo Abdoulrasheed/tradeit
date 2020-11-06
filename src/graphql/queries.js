@@ -1,6 +1,52 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const nearbyListings = /* GraphQL */ `
+  query NearbyListings(
+    $location: LocationInput!
+    $m: Int
+    $limit: Int
+    $nextToken: String
+  ) {
+    nearbyListings(
+      location: $location
+      m: $m
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        carts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      total
+      nextToken
+    }
+  }
+`;
 export const getUserProfile = /* GraphQL */ `
   query GetUserProfile($id: ID!) {
     getUserProfile(id: $id) {
@@ -23,7 +69,6 @@ export const getUserProfile = /* GraphQL */ `
       cartItem {
         items {
           id
-          listingID
           createdAt
           updatedAt
         }
@@ -107,6 +152,14 @@ export const getListing = /* GraphQL */ `
       }
       categoryId
       quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -141,6 +194,9 @@ export const listListings = /* GraphQL */ `
         }
         categoryId
         quantity
+        carts {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -152,8 +208,35 @@ export const getCartItem = /* GraphQL */ `
   query GetCartItem($id: ID!) {
     getCartItem(id: $id) {
       id
-      listingID
-      owner {
+      listing {
+        id
+        title
+        price
+        owner {
+          id
+          fullname
+          createdAt
+          updatedAt
+          owner
+        }
+        description
+        likes
+        images {
+          url
+        }
+        location {
+          lat
+          lon
+        }
+        categoryId
+        quantity
+        carts {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      profile {
         id
         fullname
         listings {
@@ -186,8 +269,18 @@ export const listCartItems = /* GraphQL */ `
     listCartItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        listingID
-        owner {
+        listing {
+          id
+          title
+          price
+          description
+          likes
+          categoryId
+          quantity
+          createdAt
+          updatedAt
+        }
+        profile {
           id
           fullname
           createdAt
@@ -236,6 +329,9 @@ export const searchListings = /* GraphQL */ `
         }
         categoryId
         quantity
+        carts {
+          nextToken
+        }
         createdAt
         updatedAt
       }
