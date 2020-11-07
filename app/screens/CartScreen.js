@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import Constants from "expo-constants";
-import produce from 'immer'
 
 import Screen from "../components/Screen";
 import {
@@ -12,28 +11,34 @@ import {
 import useAuth from "../auth/useAuth";
 import colors from "../config/colors";
 import Text from "../components/Text";
-import cartApi from "../api/cart"
 import routes from "../navigation/routes";
 import { showToast } from "../utility/toast";
+import { ListingContext } from "../auth/context";
+import { SET_CART_ITEMS } from "../state/actions";
 
 const CartScreen = ({ navigation }) => {
-    const [carts, setCarts] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    const { user, logIn: updateProfile } = useAuth()
+    const { user } = useAuth()
+    const [state, dispatch] = useContext(ListingContext);
 
     useEffect(() => {
-       setCarts(user.profile.cartItem.items)
-    }, []);
+        setCarts(user.profile.cartItem.items)
+        setRefreshing(false)
+    }, [refreshing]);
     
     const handleDelete = async (cart) => {
-        const newCarts = carts.filter((m) => m.id !== cart.id)
-        const updatedProfile = produce(user, draft => {
-            draft.profile.cartItem.items = newCarts
-        })
-        updateProfile(updatedProfile)
-        await cartApi.removeFromCart(cart.id)
+        const newCarts = state.carts.filter((item) => item.listing.id !== cart.id)
+        setCarts(newCarts)
+        //await cartApi.removeFromCart(cart.id)
         showToast("Successfully deleted !")
     };
+
+    const setCarts = (data) => {
+        dispatch({
+            type: SET_CART_ITEMS,
+            payload: data
+        })
+    }
     
     return (
         <>
@@ -41,9 +46,9 @@ const CartScreen = ({ navigation }) => {
                 <Text style={styles.text}>Cart</Text>
             </View>
             <Screen>
-                {carts && carts.length === 0 && <Text style={styles.nolistingText}>Items you add to your cart will appear here</Text>}
+                {state.carts && state.carts.length === 0 && <Text style={styles.nolistingText}>Items you add to your cart will appear here</Text>}
                 <FlatList
-                    data={carts}
+                    data={state.carts}
                     keyExtractor={(message) => message.id.toString()}
                     renderItem={({ item }) => (
                         <ListItem
@@ -58,9 +63,7 @@ const CartScreen = ({ navigation }) => {
                     )}
                     ItemSeparatorComponent={ListItemSeparator}
                     refreshing={refreshing}
-                    onRefresh={() => {
-                        setCarts(user.profile.listings.items);
-                    }}
+                    onRefresh={() => { setRefreshing(!refreshing) }}
                 />
             </Screen>
         </>

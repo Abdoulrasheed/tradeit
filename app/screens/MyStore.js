@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import Constants from "expo-constants";
-import produce from 'immer'
 
 import Screen from "../components/Screen";
 import {
@@ -12,38 +11,41 @@ import {
 import useAuth from "../auth/useAuth";
 import colors from "../config/colors";
 import Text from "../components/Text";
-import listingApi from "../api/listings"
 import routes from "../navigation/routes";
 import { showToast } from "../utility/toast";
+import { ListingContext } from "../auth/context";
+import { SET_MY_LISTINGS } from "../state/actions";
 
 const MyStore = ({ navigation }) => {
-    const [listings, setListings] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    const { user, logIn: updateProfile } = useAuth()
+    const { user } = useAuth()
+    const [state, dispatch] = useContext(ListingContext);
 
     useEffect(() => {
-       setListings(user.profile.listings.items)
-    }, []);
+        setListings(user.profile.listings.items)
+        setRefreshing(false)
+    }, [refreshing]);
     
     const handleDelete = async (listing) => {
-        const newListings = listings.filter((m) => m.id !== listing.id)
-        const updatedProfile = produce(user, draft => {
-            draft.profile.listings = newListings
-        })
-        updateProfile(updatedProfile)
-        await listingApi.removeListing(listing.id)
+        const newListings = state.listings.filter((item) => item.id !== listing.id)
+        //await listingApi.removeListing(listing.id)
+        setListings(newListings)
         showToast("Successfully deleted !")
     };
-    
+
+    const setListings = (data) => {
+        dispatch({ type: SET_MY_LISTINGS, payload: data })
+    }
+
     return (
         <>
             <View style={styles.top}>
                 <Text style={styles.text}>My Store</Text>
             </View>
             <Screen>
-                {listings && listings.length === 0 && <Text style={styles.nolistingText}>Your listings will appear here</Text>}
+                {state.myListings && state.myListings.length === 0 && <Text style={styles.nolistingText}>Your listings will appear here</Text>}
                 <FlatList
-                    data={listings}
+                    data={state.myListings}
                     keyExtractor={(message) => message.id.toString()}
                     renderItem={({ item }) => (
                         <ListItem
@@ -58,9 +60,7 @@ const MyStore = ({ navigation }) => {
                     )}
                     ItemSeparatorComponent={ListItemSeparator}
                     refreshing={refreshing}
-                    onRefresh={() => {
-                        setListings(user.profile.listings.items);
-                    }}
+                    onRefresh={() => setRefreshing(!refreshing)}
                 />
             </Screen>
         </>

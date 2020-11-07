@@ -12,69 +12,17 @@ import navigation from "./rootNavigation";
 import useNotifications from "../hooks/useNotifications";
 import CartScreen from "../screens/CartScreen";
 import MyStore from "../screens/MyStore";
-import { ListingContext } from "../auth/context"
-import listingsApi from "../api/listings";
-import storage from "../api/storage";
+import { Store } from "../state";
 
 
 const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => {
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [nextToken, setNextToken] = useState();
-  const [loadingMore, setLoadingMore] = useState();
-  const [error, setError] = useState();
 
   useNotifications();
-  
-  useEffect(() => {
-    ready()
-  }, []);
-  
-  const ready = async (coords, meters) => {
-    setLoading(true)
-    if (!coords) {
-      const loc = await storage.get("location")
-      coords = loc.value
-    }
-
-    try {
-      const listings = await listingsApi.getListings({ coords, meters })
-      setNextToken(listings.data.nearbyListings.nextToken)
-      setListings(listings.data.nearbyListings.items)
-      setError(false)
-    } catch (error) {
-      setError(true)
-    }
-    setLoading(false)
-  }
-
-  const loadMore = async (nextToken, coords, meters) => {
-    setLoadingMore(true)
-    try {
-      const newListings = await listingsApi.getListings({ nextToken, coords, meters })
-      setNextToken(newListings.data.nearbyListings.nextToken)
-      const lists = listings.concat(newListings.data.nearbyListings.items)
-      setListings(lists)
-    } catch (error) {
-      setError(true)
-      console.log("error loading more", error);
-    }
-    setLoadingMore(false)
-  }
 
   return (
-    <ListingContext.Provider value={{
-      error,
-      loading,
-      loadingMore,
-      listings,
-      nextToken,
-      loadMore,
-      refresh:ready,
-      setListings
-    }}>
+    <Store>
       <Tab.Navigator>
         <Tab.Screen
           name="Feed"
@@ -130,8 +78,8 @@ const AppNavigator = () => {
             ),
           }}
         />
-      </Tab.Navigator>
-    </ListingContext.Provider>
+        </Tab.Navigator>
+      </Store>
   );
 };
 

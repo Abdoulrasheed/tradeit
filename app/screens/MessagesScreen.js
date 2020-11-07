@@ -12,13 +12,13 @@ import Text from "../components/Text";
 const initialMessages = [
   {
     id: 1,
-    title: "Mosh Hamedani",
+    title: "Abdulrasheed Ibrahim",
     description: "Hey! Is this item still available?",
     image: require("../assets/person.jpg"),
   },
   {
     id: 2,
-    title: "Mosh Hamedani",
+    title: "Abdulrasheed Ibrahim",
     description:
       "I'm interested in this item. When will you be able to post it?",
     image: require("../assets/person.jpg"),

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import * as Yup from "yup";
 import { usePermissions } from "expo-permissions";
@@ -21,6 +21,9 @@ import useAuth from "../auth/useAuth";
 import useApi from "../hooks/useApi";
 import useListing from "../auth/useListing";
 import PermissionModal from "../components/PermissionModal";
+import { CATEGORIES } from "../utility/constants";
+import { ListingContext } from "../auth/context";
+import { ADD_NEW_LISTING, UPDATE_MY_LISTINGS } from "../state/actions";
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required().min(1).label("Title"),
@@ -31,93 +34,18 @@ const validationSchema = Yup.object().shape({
   images: Yup.array().max(10, "You cannot add more than 10 pictures, click one to remove it").min(1, "Please select at least one image."),
 });
 
-const categories = [
-  {
-    backgroundColor: "#778ca3",
-    icon: "food",
-    label: "Food",
-    value: 9,
-  },
-  {
-    backgroundColor: "#778ca3",
-    icon: "phone",
-    label: "Phones",
-    value: 9,
-  },
-  {
-    backgroundColor: "#fc5c65",
-    icon: "floor-lamp",
-    label: "Furniture",
-    value: 1,
-  },
-  {
-    backgroundColor: "#fd9644",
-    icon: "car",
-    label: "Cars",
-    value: 2,
-  },
-  {
-    backgroundColor: "#fed330",
-    icon: "camera",
-    label: "Cameras",
-    value: 3,
-  },
-  {
-    backgroundColor: "#26de81",
-    icon: "cards",
-    label: "Games",
-    value: 4,
-  },
-  {
-    backgroundColor: "#2bcbba",
-    icon: "shoe-heel",
-    label: "Clothing",
-    value: 5,
-  },
-  {
-    backgroundColor: "#45aaf2",
-    icon: "basketball",
-    label: "Sports",
-    value: 6,
-  },
-  {
-    backgroundColor: "#4b7bec",
-    icon: "headphones",
-    label: "Movies & Music",
-    value: 7,
-  },
-  {
-    backgroundColor: "#a55eea",
-    icon: "book-open-variant",
-    label: "Books",
-    value: 8,
-  },
-  {
-    backgroundColor: "#a55eea",
-    icon: "laptop",
-    label: "Computers",
-    value: 8,
-  },
-  {
-    backgroundColor: "#778ca3",
-    icon: "application",
-    label: "Other",
-    value: 10,
-  },
-];
-
-function ListingEditScreen() {
+const ListingEditScreen = () => {
   const location = useLocation();
   const listingApi = useApi(listingsApi.addListing)
   const [progress, setProgress] = useState(0);
   const [modalVisible, setmodalVisible] = useState(false);
   const [permission, askForPermission] = usePermissions(Permissions.CAMERA_ROLL);
   const { user } = useAuth()
-  const { api } = useListing()
+  const [state, dispatch] = useContext(ListingContext);
   
   useEffect(() => {
-    if (!permission || permission.status !== 'granted') {
-      setmodalVisible(true)
+    if (permission && permission.status !== 'granted') {
+        setmodalVisible(true)
     } else {
       setmodalVisible(false)
      }
@@ -129,12 +57,13 @@ function ListingEditScreen() {
   
   const handleSubmit = async (listing, { resetForm }) => {
     setProgress(0);
-    await listingApi.request(
+    const list = await listingApi.request(
       { ...listing, userID: user.profile.id, location },
         (progress) => setProgress(progress)
       );
     resetForm();
-    api.refresh()
+    dispatch({type: ADD_NEW_LISTING, payload: list})
+    dispatch({type: UPDATE_MY_LISTINGS, payload: list})
   };
 
   return (
@@ -174,7 +103,7 @@ function ListingEditScreen() {
             width="50%"
           />
           <Picker
-            items={categories}
+            items={CATEGORIES}
             name="category"
             numberOfColumns={3}
             PickerItemComponent={CategoryPickerItem}

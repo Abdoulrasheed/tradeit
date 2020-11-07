@@ -247,4 +247,69 @@ export const nearbyListings = /* GraphQL */ `
       nextToken
     }
   }
+`
+export const getListing = /* GraphQL */ `
+  query GetListing($id: ID!) {
+    getListing(id: $id) {
+      id
+      title
+      price
+      owner {
+        id
+        fullname
+        listings {
+          items {
+            categoryId
+            createdAt
+            description
+            id
+            images {
+              url
+            }
+            likes
+            location {
+              lat
+              lon
+            }
+            price
+            quantity
+            title
+          }
+        }
+        cartItem {
+          nextToken
+        }
+        picture {
+          url
+        }
+        likedListings {
+          listingID
+        }
+        createdAt
+        updatedAt
+        owner
+      }
+      description
+      likes
+      images {
+        url
+      }
+      location {
+        lat
+        lon
+      }
+      categoryId
+      quantity
+      carts {
+        items {
+          id
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
 `;

@@ -8,7 +8,7 @@ import Header from "./Header";
 const Stack = createStackNavigator();
 
 const FeedNavigator = () => (
-  <Stack.Navigator mode="modal" screenOptions={navigationOptions}>
+  <Stack.Navigator screenOptions={navigationOptions}>
     <Stack.Screen
       options={{
         headerTitle: (props) => <Header {...props} />,

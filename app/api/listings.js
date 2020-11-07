@@ -1,8 +1,8 @@
 import { API, graphqlOperation, Storage } from "aws-amplify";
 import { addLike, createListing, deleteListing } from "../../src/graphql/mutations";
 import config from "../../aws-exports";
-import { getListing, nearbyListings } from "../../src/graphql/queries";
 import { updateUserProfile } from "./mutations"
+import { nearbyListings, getListing } from './queries'
 import profileApi from "./auth"
 
 const {
@@ -14,7 +14,7 @@ const getListings = async ({ nextToken, coords, meters = 10000 }) => {
   try {
     const variables = {
       location: { lat: coords.latitude, lon: coords.longitude },
-      limit: 10,
+      limit: 20,
       m: meters,
       nextToken,
       }
@@ -92,7 +92,7 @@ const uploadToS3 = async (listing, onUploadProgress) => {
       await Storage.put(key, blob, {
           contentType: "image/jpeg",
           progressCallback({ loaded, total }) { 
-            onUploadProgress(listing.images.length / (loaded / total));
+            onUploadProgress((loaded / total) / listing.images.length * 0.1);
           },
       });
     }))

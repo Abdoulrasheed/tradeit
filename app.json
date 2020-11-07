@@ -22,7 +22,12 @@
     },
     "android": {
       "package": "com.bitpoint.tradeit",
-      "versionCode": 1
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCbHdCVhGmXDnY_w9JVIQmiZLXKeOpfYMs"
+        }
+      }
     },
     "description": "A marketplace for selling your home made produce.",
     "notification": {
@@ -30,7 +35,7 @@
     },
     "extra": {
       "bugsnag": {
-        "apiKey": "1f89967da16ead7f99e7a2ad11c8f9ac"
+        "apiKey": "e79ef8fab4abd37ece6cad926e66d3b6"
       }
     },
     "hooks": {

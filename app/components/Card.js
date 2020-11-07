@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { Image } from "react-native-expo-image-cache";
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,8 @@ import Text from "./Text";
 import colors from "../config/colors";
 import thousandSep from "../utility/number";
 import useAuth from "../auth/useAuth";
+import { SET_LIKED_LISTINGS } from "../state/actions";
+import { ListingContext } from "../auth/context";
 
 function Card({
   image,
@@ -24,18 +26,19 @@ function Card({
  }) {
   const [liked, setLiked] = useState(aliked);
   const [likes, setLikes] = useState(currentLikes);
-  const { user, logIn: updateProfile } = useAuth()
+  const [state, dispatch] = useContext(ListingContext);
+
   
   const handleLike = async () => {
     const like = liked ? -1 : 1
     setLiked(!liked);
     const listing = await listingApi.likeListing(listingID, like, profileID);
     setLikes(listing.likes);
-
-    const updatedProfile = produce(user, draft => {
-      draft.profile.likedListings = listing.likedListings
-    })
-    updateProfile(updatedProfile)
+    
+    dispatch({
+      type: SET_LIKED_LISTINGS,
+      payload: listing.likes,
+    });
   }
 
   const iconSize = 24
