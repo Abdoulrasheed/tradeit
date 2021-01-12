@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 import AccountNavigator from "./AccountNavigator";
 import FeedNavigator from "./FeedNavigator";
@@ -14,16 +14,16 @@ import CartScreen from "../screens/CartScreen";
 import MyStore from "../screens/MyStore";
 import { Store } from "../state";
 
-
 const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => {
-
   useNotifications();
 
   return (
     <Store>
-      <Tab.Navigator>
+      <Tab.Navigator
+        tabBarOptions={{ style: { paddingBottom: 10, height: 60 } }}
+      >
         <Tab.Screen
           name="Feed"
           component={FeedNavigator}
@@ -74,12 +74,16 @@ const AppNavigator = () => {
           component={AccountNavigator}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="account" color={color} size={size} />
+              <MaterialCommunityIcons
+                name="account"
+                color={color}
+                size={size}
+              />
             ),
           }}
         />
-        </Tab.Navigator>
-      </Store>
+      </Tab.Navigator>
+    </Store>
   );
 };
 

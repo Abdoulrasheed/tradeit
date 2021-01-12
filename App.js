@@ -10,7 +10,7 @@ import OfflineNotice from "./app/components/OfflineNotice";
 import AuthNavigator from "./app/navigation/AuthNavigator";
 import AuthContext from "./app/auth/context";
 import authStorage from "./app/api/storage";
-import authAPi from "./app/api/auth"
+import authAPi from "./app/api/auth";
 import { navigationRef } from "./app/navigation/rootNavigation";
 import logger from "./app/utility/logger";
 
@@ -25,13 +25,15 @@ const App = () => {
     const user = await authStorage.get("user");
     if (user) {
       try {
-        const response = await authAPi._getUserProfileByID(user.value.profile.id)
-        setUser({...user.value, profile: response.data.getUserProfile})
+        const response = await authAPi._getUserProfileByID(
+          user.value.profile.id
+        );
+        setUser({ ...user.value, profile: response.data.getUserProfile });
       } catch (e) {
         if (user.value) {
           setUser(user.value);
         } else {
-          setUser(user)
+          setUser(user);
         }
       }
     }
@@ -46,7 +48,7 @@ const App = () => {
     <AuthContext.Provider value={{ user, setUser }}>
       <OfflineNotice />
       <NavigationContainer ref={navigationRef} theme={navigationTheme}>
-        {user ? <AppNavigator /> : <AuthNavigator />}
+        <AppNavigator />
       </NavigationContainer>
     </AuthContext.Provider>
   );
