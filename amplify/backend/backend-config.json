@@ -1,6 +1,6 @@
 {
   "auth": {
-    "tradeit86253e05": {
+    "tradeit0a678c09": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
@@ -8,7 +8,7 @@
     }
   },
   "api": {
-    "tradeit": {
+    "tradeitgraph": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "output": {
@@ -16,18 +16,12 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authtradeit86253e05"
+              "userPoolId": "authtradeit0a678c09"
             }
           },
           "additionalAuthenticationProviders": []
         }
       }
-    }
-  },
-  "storage": {
-    "tradeitlatest": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation"
     }
   }
 }

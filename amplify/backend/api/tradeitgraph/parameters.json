@@ -1,10 +1,10 @@
 {
-    "AppSyncApiName": "tradeit",
+    "AppSyncApiName": "tradeitgraph",
     "DynamoDBBillingMode": "PAY_PER_REQUEST",
     "DynamoDBEnableServerSideEncryption": false,
     "AuthCognitoUserPoolId": {
         "Fn::GetAtt": [
-            "authtradeit86253e05",
+            "authtradeit0a678c09",
             "Outputs.UserPoolId"
         ]
     }

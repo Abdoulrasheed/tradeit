@@ -12,10 +12,7 @@ const isExpired = (item) => {
 
 const set = async (key, value) => {
   try {
-    const item = {
-      value,
-      timestamp: Date.now(),
-    };
+    const item = { value, timestamp: Date.now() };
     await AsyncStorage.setItem(key, JSON.stringify(item));
   } catch (error) {
     console.log(error);
@@ -46,7 +43,6 @@ const get = async (key) => {
 
 const remove = async (key) => {
   try {
-    // Command Query Separation (CQS)
     await AsyncStorage.removeItem(key);
   } catch (error) {
     console.log(error);

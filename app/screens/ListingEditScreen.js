@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import * as Yup from "yup";
 import { usePermissions } from "expo-permissions";
-import * as Permissions from 'expo-permissions';
+import * as Permissions from "expo-permissions";
 
 import {
   Form,
@@ -31,59 +31,63 @@ const validationSchema = Yup.object().shape({
   quantity: Yup.number().required().min(1).label("Quantity"),
   description: Yup.string().label("Description"),
   category: Yup.object().required().nullable().label("Category"),
-  images: Yup.array().max(10, "You cannot add more than 10 pictures, click one to remove it").min(1, "Please select at least one image."),
+  images: Yup.array()
+    .max(10, "You cannot add more than 10 pictures, click one to remove it")
+    .min(1, "Please select at least one image."),
 });
 
 const ListingEditScreen = () => {
   const location = useLocation();
-  const listingApi = useApi(listingsApi.addListing)
+  const listingApi = useApi(listingsApi.addListing);
   const [progress, setProgress] = useState(0);
   const [modalVisible, setmodalVisible] = useState(false);
-  const [permission, askForPermission] = usePermissions(Permissions.CAMERA_ROLL);
-  const { user } = useAuth()
+  const [permission, askForPermission] = usePermissions(
+    Permissions.CAMERA_ROLL
+  );
+  const { user } = useAuth();
   const [state, dispatch] = useContext(ListingContext);
-  
+
   useEffect(() => {
-    if (permission && permission.status !== 'granted') {
-        setmodalVisible(true)
+    if (permission && permission.status !== "granted") {
+      setmodalVisible(true);
     } else {
-      setmodalVisible(false)
-     }
+      setmodalVisible(false);
+    }
   }, [permission]);
 
   const requestPermission = () => {
-    askForPermission()
-  }
-  
+    askForPermission();
+  };
+
   const handleSubmit = async (listing, { resetForm }) => {
     setProgress(0);
     const list = await listingApi.request(
       { ...listing, userID: user.profile.id, location },
-        (progress) => setProgress(progress)
-      );
+      (progress) => setProgress(progress)
+    );
     resetForm();
-    dispatch({type: ADD_NEW_LISTING, payload: list})
-    dispatch({type: UPDATE_MY_LISTINGS, payload: list})
+    dispatch({ type: ADD_NEW_LISTING, payload: list });
+    dispatch({ type: UPDATE_MY_LISTINGS, payload: list });
   };
 
   return (
     <Screen style={styles.container}>
-        <UploadScreen
-          onDone={() => listingApi.setLoading(false)}
-          progress={progress}
-          visible={listingApi.loading}
-        />
-        <Form
-            initialValues={{
-              title: "",
-              price: "",
-              description: "",
-              category: null,
-              images: [],
-              quantity: ""
-          }}
-          onSubmit={handleSubmit}
-          validationSchema={validationSchema}
+      <UploadScreen
+        onDone={() => listingApi.setLoading(false)}
+        progress={progress}
+        visible={listingApi.loading}
+      />
+      <Form
+        initialValues={{
+          title: "",
+          price: "",
+          description: "",
+          category: null,
+          images: [],
+          quantity: "",
+        }}
+        onSubmit={handleSubmit}
+        validationSchema={validationSchema}
       >
         <ScrollView>
           <FormImagePicker name="images" />
@@ -94,7 +98,7 @@ const ListingEditScreen = () => {
             name="price"
             placeholder="Price"
             width="50%"
-            />
+          />
           <FormField
             keyboardType="numeric"
             maxLength={8}
@@ -117,8 +121,8 @@ const ListingEditScreen = () => {
             numberOfLines={3}
             placeholder="Description"
           />
-          </ScrollView>
-          <SubmitButton title="Post" />
+        </ScrollView>
+        <SubmitButton title="Post" />
       </Form>
 
       <PermissionModal
@@ -128,7 +132,7 @@ const ListingEditScreen = () => {
       />
     </Screen>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

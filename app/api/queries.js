@@ -65,151 +65,60 @@ export const listUserProfiles = /* GraphQL */ `
     $nextToken: String
   ) {
     listUserProfiles(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      cartItem {
-        items {
-          listing {
-            categoryId
-            createdAt
-            description
-            id
-            images {
-              url
+      items {
+        cartItem {
+          items {
+            listing {
+              categoryId
+              createdAt
+              description
+              id
+              images {
+                url
+              }
+              likes
+              location {
+                lat
+                lon
+              }
+              price
+              quantity
+              title
+              updatedAt
             }
-            likes
-            location {
-              lat
-              lon
-            }
-            price
-            quantity
-            title
-            updatedAt
-          }
-          profile {
-            createdAt
-            fullname
-            id
-            likedListings {
-              listingID
-            }
-            listings {
-              items {
-                categoryId
-                createdAt
-                description
-                id
-                images {
-                  url
+            profile {
+              createdAt
+              fullname
+              id
+              likedListings {
+                listingID
+              }
+              listings {
+                items {
+                  categoryId
+                  createdAt
+                  description
+                  id
+                  images {
+                    url
+                  }
+                  likes
+                  location {
+                    lat
+                    lon
+                  }
+                  price
+                  quantity
+                  title
+                  updatedAt
                 }
-                likes
-                location {
-                  lat
-                  lon
-                }
-                price
-                quantity
-                title
-                updatedAt
+              }
+              picture {
+                url
               }
             }
-            picture {
-              url
-            }
           }
         }
-      }
-      fullname
-      id
-      likedListings {
-        listingID
-      }
-      listings {
-        items {
-          categoryId
-          createdAt
-          description
-          id
-          images {
-            url
-          }
-          likes
-          location {
-            lat
-            lon
-          }
-          price
-          quantity
-          title
-          updatedAt
-        }
-      }
-      picture {
-        url
-      }
-    }
-    }
-  }
-`;
-export const listListings = /* GraphQL */ `
-  query ListListings(
-    $filter: ModelListingFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listListings(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      likes
-      price
-      quantity
-      title
-      categoryId
-      createdAt
-      description
-      id
-      location {
-        lat
-        lon
-      }
-      images {
-        url
-      }
-    }
-      nextToken
-    }
-  }
-`;
-export const nearbyListings = /* GraphQL */ `
-  query NearbyListings(
-    $location: LocationInput!
-    $m: Int
-    $limit: Int
-    $nextToken: String
-  ) {
-    nearbyListings(
-      location: $location
-      m: $m
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-    items {
-      categoryId
-      createdAt
-      description
-      id
-      images {
-        url
-      }
-      likes
-      location {
-        lat
-        lon
-      }
-      owner {
-        cartItem {
-          nextToken
-        }
-        createdAt
         fullname
         id
         likedListings {
@@ -232,22 +141,113 @@ export const nearbyListings = /* GraphQL */ `
             price
             quantity
             title
+            updatedAt
           }
         }
         picture {
           url
         }
       }
-      price
-      quantity
-      title
-      updatedAt
     }
+  }
+`;
+export const listListings = /* GraphQL */ `
+  query ListListings(
+    $filter: ModelListingFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listListings(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        likes
+        price
+        quantity
+        title
+        categoryId
+        createdAt
+        description
+        id
+        location {
+          lat
+          lon
+        }
+        images {
+          url
+        }
+      }
+      nextToken
+    }
+  }
+`;
+export const nearbyListings = /* GraphQL */ `
+  query NearbyListings(
+    $location: LocationInput!
+    $m: Int
+    $limit: Int
+    $nextToken: String
+  ) {
+    nearbyListings(
+      location: $location
+      m: $m
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        categoryId
+        createdAt
+        description
+        id
+        images {
+          url
+        }
+        likes
+        location {
+          lat
+          lon
+        }
+        owner {
+          cartItem {
+            nextToken
+          }
+          createdAt
+          fullname
+          id
+          likedListings {
+            listingID
+          }
+          listings {
+            items {
+              categoryId
+              createdAt
+              description
+              id
+              images {
+                url
+              }
+              likes
+              location {
+                lat
+                lon
+              }
+              price
+              quantity
+              title
+            }
+          }
+          picture {
+            url
+          }
+        }
+        price
+        quantity
+        title
+        updatedAt
+      }
       total
       nextToken
     }
   }
-`
+`;
 export const getListing = /* GraphQL */ `
   query GetListing($id: ID!) {
     getListing(id: $id) {

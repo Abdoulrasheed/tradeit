@@ -12,9 +12,7 @@ import { usePermissions } from "expo-permissions";
 import * as Permissions from "expo-permissions";
 import { Slider } from "@miblanchard/react-native-slider";
 import { FontAwesome5 } from "@expo/vector-icons";
-import * as Location from "expo-location";
 
-import ActivityIndicator from "../components/ActivityIndicator";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import colors from "../config/colors";
@@ -26,13 +24,13 @@ import CarouselItem from "../components/CarouselItem";
 import useAuth from "../auth/useAuth";
 import { isLiked } from "../utility/shortcuts";
 import PermissionModal from "../components/PermissionModal";
-import { showToast } from "../utility/toast";
 import storage from "../api/storage";
 import { CATEGORIES } from "../utility/constants";
 import Pill from "../components/Pill";
 import listingsApi from "../api/listings";
 import { SET_LISTINGS } from "../state/actions";
 import { ListingContext } from "../auth/context";
+import useLocation from "../hooks/useLocation";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -46,8 +44,6 @@ function ListingsScreen({ navigation }) {
   const [activeCategory, setActiveCategory] = useState();
   const [permission, askForPermission] = usePermissions(Permissions.LOCATION);
   const [meters, setMeters] = useState(10000);
-  const [location, setLocation] = useState();
-  const [requestOpenLocation, setRequestOpenLocation] = useState(false);
   const [nextToken, setNextToken] = useState();
   const [loadingMore, setLoadingMore] = useState();
   const [error, setError] = useState();
@@ -56,42 +52,21 @@ function ListingsScreen({ navigation }) {
   const [allListings, setAllListings] = useState();
   const [state, dispatch] = useContext(ListingContext);
 
+  const location = useLocation();
+
   useEffect(() => {
-    if (permission && permission.status !== "granted") {
-      setmodalVisible(true);
-    } else {
-      setmodalVisible(false);
-      recheckLocationService();
-    }
+    requestPermission();
   }, [permission]);
 
   const requestPermission = async () => {
-    askForPermission();
-    if (permission.status !== "granted") {
-      const locEnabled = await Location.hasServicesEnabledAsync();
-      if (!locEnabled) {
-        setRequestOpenLocation(true);
-      }
-    }
-  };
+    console.log("Invalid");
 
-  const recheckLocationService = async () => {
-    const locEnabled = await Location.hasServicesEnabledAsync();
-    setRequestOpenLocation(!locEnabled);
-    if (!locEnabled) {
-      showToast("Please turn on location");
+    if (permission.status !== "granted") {
+      setmodalVisible(true);
     } else {
-      try {
-        const {
-          coords: { latitude, longitude },
-        } = await Location.getLastKnownPositionAsync();
-        setLocation({ latitude, longitude });
-        storage.set("location", { latitude, longitude });
-        getListings({ coords: { latitude, longitude } });
-      } catch (error) {
-        console.log("error loc", error);
-      }
+      setmodalVisible(false);
     }
+    getListings();
   };
 
   const loadMore = async () => {
@@ -122,18 +97,17 @@ function ListingsScreen({ navigation }) {
     }
   };
 
-  const getListings = async ({ coords }) => {
+  const getListings = async () => {
     setLoading(true);
-    coords = coords || location;
-    if (!coords) {
-      const loc = await storage.get("location");
-      coords = loc.value;
-    }
-
+    console.log(location);
     const meters = isNaN(meters) ? meters : meters[0];
 
     try {
-      const listings = await listingsApi.getListings({ coords, meters });
+      const listings = await listingsApi.getListings({
+        coords: location,
+        meters,
+      });
+
       setNextToken(listings.data.nearbyListings.nextToken);
       setListings(listings.data.nearbyListings.items);
       setAllListings(listings.data.nearbyListings.items);
@@ -147,15 +121,15 @@ function ListingsScreen({ navigation }) {
     setActiveCategory(null);
   };
 
-  const filterListings = (cat) => {
-    if (cat) {
-      setActiveCategory(cat);
-      const data = allListings.filter((item) => item.categoryId == cat);
-      setListings(data);
-      return;
-    }
-    setListings(allListings);
-  };
+  // const filterListings = (cat) => {
+  //   if (cat) {
+  //     setActiveCategory(cat);
+  //     const data = allListings.filter((item) => item.categoryId == cat);
+  //     setListings(data);
+  //     return;
+  //   }
+  //   setListings(allListings);
+  // };
 
   const renderItem = ({ item }) => {
     return (
@@ -248,7 +222,7 @@ function ListingsScreen({ navigation }) {
         />
       </View>
 
-      <FlatList
+      {/* <FlatList
         contentContainerStyle={styles.categoriesContainer}
         data={CATEGORIES}
         keyExtractor={(item) => item.label}
@@ -260,7 +234,7 @@ function ListingsScreen({ navigation }) {
             onPress={(val) => filterListings(val)}
           />
         )}
-      />
+      /> */}
       <FlatList
         contentContainerStyle={styles.cardContainer}
         data={state.listings}
@@ -272,7 +246,7 @@ function ListingsScreen({ navigation }) {
         ListFooterComponentStyle={styles.cardsFooter}
         ListEmptyComponent={
           <Text style={styles.noListingText}>
-            No Listings found in the selected range and filter
+            No Listings found in the selected range
           </Text>
         }
         numColumns={2}
@@ -301,24 +275,10 @@ function ListingsScreen({ navigation }) {
         )}
       />
       <PermissionModal
-        buttonText={
-          modalVisible ? "ALLOW" : requestOpenLocation ? "I'M DONE" : ""
-        }
-        description={
-          modalVisible
-            ? "Tradeit would like to use your device location in order to show nearby listings."
-            : requestOpenLocation
-            ? "Your location service is turned off, please turn it on"
-            : false
-        }
-        onPress={
-          modalVisible
-            ? requestPermission
-            : requestOpenLocation
-            ? recheckLocationService
-            : {}
-        }
-        visible={modalVisible || requestOpenLocation}
+        buttonText="ALLOW"
+        description="Tradeit would like to use your device location in order to show nearby listings."
+        onPress={askForPermission}
+        visible={modalVisible}
       />
     </Screen>
   );

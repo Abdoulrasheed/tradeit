@@ -4,15 +4,15 @@ import { AppLoading } from "expo";
 import config from "./aws-exports";
 import Amplify from "aws-amplify";
 
-import navigationTheme from "./app/navigation/navigationTheme";
-import AppNavigator from "./app/navigation/AppNavigator";
-import OfflineNotice from "./app/components/OfflineNotice";
-import AuthNavigator from "./app/navigation/AuthNavigator";
-import AuthContext from "./app/auth/context";
-import authStorage from "./app/api/storage";
 import authAPi from "./app/api/auth";
-import { navigationRef } from "./app/navigation/rootNavigation";
+import authStorage from "./app/api/storage";
+import AuthContext from "./app/auth/context";
+import AppNavigator from "./app/navigation/AppNavigator";
+import AuthNavigator from "./app/navigation/AuthNavigator";
 import logger from "./app/utility/logger";
+import navigationTheme from "./app/navigation/navigationTheme";
+import { navigationRef } from "./app/navigation/rootNavigation";
+import OfflineNotice from "./app/components/OfflineNotice";
 
 logger.start();
 Amplify.configure(config);
