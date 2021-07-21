@@ -1,11 +1,13 @@
-![Landing Screen](./app/assets/screenshots/landing.jpg?raw=true "Landing Screen")
-![Login Screen](./app/assets/screenshots/login.png?raw=true "Login Screen")
-![Register Screen](./app/assets/screenshots/register.jpg?raw=true "Register Screen")
-![Permission Screen](./app/assets/screenshots/permission.jpg?raw=true "Permission Screen")
-![Home Screen](./app/assets/screenshots/tradeit_0.png?raw=true "Home Screen")
-![Home Screen II](./app/assets/screenshots/tradeit_2.png?raw=true "Home Screen")
-![Add Listing](./app/assets/screenshots/tradeit_1.png?raw=true "Add Listing Screen")
-![Listing Detail](./app/assets/screenshots/tradeit_3.png?raw=true "Listing Detail")
-![Listing Detail II](./app/assets/screenshots/tradeit_4.png?raw=true "Home Screen II")
-![Account Screen](./app/assets/screenshots/account.jpg?raw=true "Account Screen")
-![Messages Screen II](./app/assets/screenshots/messages.jpg?raw=true "Messages Screen II")
+<p float="left">
+  <img src="./app/assets/screenshots/landing.jpg?raw=true" width="100" />
+  <img src="./app/assets/screenshots/login.jpg?raw=true" width="100" /> 
+  <img src="./app/assets/screenshots/register.jpg?raw=true" width="100" />
+  <img src="./app/assets/screenshots/permission.jpg?raw=true" width="100" />
+  <img src="./app/assets/screenshots/tradeit_0.png?raw=true" width="100" />
+  <img src="./app/assets/screenshots/tradeit_2.png?raw=true?raw=true" width="100" />
+  <img src="./app/assets/screenshots/tradeit_1.png?raw=true" width="100" />
+  <img src="./app/assets/screenshots/tradeit_3.png?raw=true" width="100" />
+  <img src="./app/assets/screenshots/tradeit_4.png?raw=true" width="100" />
+  <img src="./app/assets/screenshots/account.jpg?raw=true" width="100" />
+  <img src="./app/assets/screenshots/messages.jpg?raw=true" width="100" />
+</p>
