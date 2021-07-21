@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 
+import AuthNavigator from "../navigation/AuthNavigator";
 import Screen from "../components/Screen";
 import {
   ListItem,
   ListItemDeleteAction,
   ListItemSeparator,
 } from "../components/lists";
-import Text from "../components/Text";
+import useAuth from "../auth/useAuth";
 
 const initialMessages = [
   {
@@ -28,6 +29,9 @@ const initialMessages = [
 function MessagesScreen(props) {
   const [messages, setMessages] = useState(initialMessages);
   const [refreshing, setRefreshing] = useState(false);
+  const { user } = useAuth();
+
+  if (!user) return <AuthNavigator />;
 
   const handleDelete = (message) => {
     // Delete the message from messages
@@ -35,33 +39,33 @@ function MessagesScreen(props) {
   };
 
   return (
-      <Screen>
-        <FlatList
-          data={messages}
-          keyExtractor={(message) => message.id.toString()}
-          renderItem={({ item }) => (
-            <ListItem
-              title={item.title}
-              subTitle={item.description}
-              defaultPicture={item.image}
-              onPress={() => console.log("Message selected", item)}
-              renderRightActions={() => (
-                <ListItemDeleteAction onPress={() => handleDelete(item)} />
-              )}
-            />
-          )}
-          ItemSeparatorComponent={ListItemSeparator}
-          refreshing={refreshing}
-          onRefresh={() => {
-            setMessages([
-              {
-                id: 2,
-                title: "T2",
-                description: "D2",
-                image: require("../assets/person.jpg"),
-              },
-            ]);
-          }}
+    <Screen>
+      <FlatList
+        data={messages}
+        keyExtractor={(message) => message.id.toString()}
+        renderItem={({ item }) => (
+          <ListItem
+            title={item.title}
+            subTitle={item.description}
+            defaultPicture={item.image}
+            onPress={() => console.log("Message selected", item)}
+            renderRightActions={() => (
+              <ListItemDeleteAction onPress={() => handleDelete(item)} />
+            )}
+          />
+        )}
+        ItemSeparatorComponent={ListItemSeparator}
+        refreshing={refreshing}
+        onRefresh={() => {
+          setMessages([
+            {
+              id: 2,
+              title: "T2",
+              description: "D2",
+              image: require("../assets/person.jpg"),
+            },
+          ]);
+        }}
       />
     </Screen>
   );

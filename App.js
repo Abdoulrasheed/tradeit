@@ -3,12 +3,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import { AppLoading } from "expo";
 import config from "./aws-exports";
 import Amplify from "aws-amplify";
+import { Auth } from "aws-amplify";
 
-import authAPi from "./app/api/auth";
-import authStorage from "./app/api/storage";
 import AuthContext from "./app/auth/context";
 import AppNavigator from "./app/navigation/AppNavigator";
-import AuthNavigator from "./app/navigation/AuthNavigator";
+import authAPi from "./app/api/auth";
+import authStorage from "./app/api/storage";
 import logger from "./app/utility/logger";
 import navigationTheme from "./app/navigation/navigationTheme";
 import { navigationRef } from "./app/navigation/rootNavigation";
@@ -16,6 +16,10 @@ import OfflineNotice from "./app/components/OfflineNotice";
 
 logger.start();
 Amplify.configure(config);
+
+Auth.currentCredentials()
+  .then((d) => console.log("data: ", d))
+  .catch((e) => console.log("error: ", e));
 
 const App = () => {
   const [user, setUser] = useState();

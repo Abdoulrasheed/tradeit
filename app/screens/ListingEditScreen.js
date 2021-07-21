@@ -11,6 +11,7 @@ import {
   SubmitButton,
 } from "../components/forms";
 
+import AuthNavigator from "../navigation/AuthNavigator";
 import CategoryPickerItem from "../components/CategoryPickerItem";
 import Screen from "../components/Screen";
 import FormImagePicker from "../components/forms/FormImagePicker";
@@ -19,7 +20,6 @@ import useLocation from "../hooks/useLocation";
 import UploadScreen from "./UploadScreen";
 import useAuth from "../auth/useAuth";
 import useApi from "../hooks/useApi";
-import useListing from "../auth/useListing";
 import PermissionModal from "../components/PermissionModal";
 import { CATEGORIES } from "../utility/constants";
 import { ListingContext } from "../auth/context";
@@ -46,6 +46,8 @@ const ListingEditScreen = () => {
   );
   const { user } = useAuth();
   const [state, dispatch] = useContext(ListingContext);
+
+  if (!user) return <AuthNavigator />;
 
   useEffect(() => {
     if (permission && permission.status !== "granted") {

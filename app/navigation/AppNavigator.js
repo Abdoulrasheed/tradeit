@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,11 +8,10 @@ import FeedNavigator from "./FeedNavigator";
 import ListingEditScreen from "../screens/ListingEditScreen";
 import NewListingButton from "./NewListingButton";
 import routes from "./routes";
-import navigation from "./rootNavigation";
 import useNotifications from "../hooks/useNotifications";
-import CartScreen from "../screens/CartScreen";
 import MyStore from "../screens/MyStore";
 import { Store } from "../state";
+import MessagesScreen from "../screens/MessagesScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -61,11 +60,15 @@ const AppNavigator = () => {
           })}
         />
         <Tab.Screen
-          name="Cart"
-          component={CartScreen}
+          name="Message"
+          component={MessagesScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="cart" color={color} size={size} />
+              <MaterialCommunityIcons
+                name="message"
+                color={color}
+                size={size}
+              />
             ),
           }}
         />

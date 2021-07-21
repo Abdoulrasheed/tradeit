@@ -15,11 +15,6 @@ const {
 } = config;
 
 const getListings = async ({ nextToken, coords, meters = 10000 }) => {
-  console.log("coords");
-  console.log(coords);
-  if (!coords.latitude) {
-    console.log("NOOOOOOOOOOOOOOOO");
-  }
   try {
     const variables = {
       location: { lat: coords.latitude, lon: coords.longitude },

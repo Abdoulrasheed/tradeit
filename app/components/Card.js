@@ -1,14 +1,12 @@
 import React, { useContext, useState } from "react";
 import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { Image } from "react-native-expo-image-cache";
-import { Ionicons } from '@expo/vector-icons';
-import produce from 'immer'
+import { Ionicons } from "@expo/vector-icons";
 
-import listingApi from "../api/listings"
+import listingApi from "../api/listings";
 import Text from "./Text";
 import colors from "../config/colors";
 import thousandSep from "../utility/number";
-import useAuth from "../auth/useAuth";
 import { SET_LIKED_LISTINGS } from "../state/actions";
 import { ListingContext } from "../auth/context";
 
@@ -22,29 +20,40 @@ function Card({
   subTitle,
   style,
   title,
-  thumb,
- }) {
+}) {
   const [liked, setLiked] = useState(aliked);
   const [likes, setLikes] = useState(currentLikes);
   const [state, dispatch] = useContext(ListingContext);
 
-  
   const handleLike = async () => {
-    const like = liked ? -1 : 1
+    const like = liked ? -1 : 1;
     setLiked(!liked);
     const listing = await listingApi.likeListing(listingID, like, profileID);
     setLikes(listing.likes);
-    
+
     dispatch({
       type: SET_LIKED_LISTINGS,
       payload: listing.likes,
     });
-  }
+  };
 
-  const iconSize = 24
-  const likeIcon = liked ? <Ionicons name="md-heart" size={iconSize} color={colors.primary} onPress={handleLike} /> :
-    <Ionicons name="ios-heart-empty" size={iconSize} color={colors.primary} onPress={handleLike} />
-  
+  const iconSize = 24;
+  const likeIcon = liked ? (
+    <Ionicons
+      name="md-heart"
+      size={iconSize}
+      color={colors.primary}
+      onPress={handleLike}
+    />
+  ) : (
+    <Ionicons
+      name="ios-heart-empty"
+      size={iconSize}
+      color={colors.primary}
+      onPress={handleLike}
+    />
+  );
+
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={[styles.card, style]}>
@@ -82,7 +91,7 @@ const styles = StyleSheet.create({
   },
   cardLower: {
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   detailsContainer: {
     padding: 20,
@@ -94,11 +103,11 @@ const styles = StyleSheet.create({
   likesContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: 35
+    width: 35,
   },
   likes: {
     fontSize: 13,
-    marginTop:2
+    marginTop: 2,
   },
   subTitle: {
     color: colors.black,

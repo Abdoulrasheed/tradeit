@@ -1,11 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  RefreshControl,
-  View,
-  Alert,
-} from "react-native";
+import { FlatList, StyleSheet, RefreshControl, View } from "react-native";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { WaveIndicator as Loader } from "react-native-indicators";
 import { usePermissions } from "expo-permissions";
@@ -24,9 +18,6 @@ import CarouselItem from "../components/CarouselItem";
 import useAuth from "../auth/useAuth";
 import { isLiked } from "../utility/shortcuts";
 import PermissionModal from "../components/PermissionModal";
-import storage from "../api/storage";
-import { CATEGORIES } from "../utility/constants";
-import Pill from "../components/Pill";
 import listingsApi from "../api/listings";
 import { SET_LISTINGS } from "../state/actions";
 import { ListingContext } from "../auth/context";
@@ -41,7 +32,6 @@ function ListingsScreen({ navigation }) {
   const [activeSlide, setActiveSlide] = useState(1);
   const [loading, setLoading] = useState();
   const [modalVisible, setmodalVisible] = useState(false);
-  const [activeCategory, setActiveCategory] = useState();
   const [permission, askForPermission] = usePermissions(Permissions.LOCATION);
   const [meters, setMeters] = useState(10000);
   const [nextToken, setNextToken] = useState();
@@ -49,24 +39,18 @@ function ListingsScreen({ navigation }) {
   const [error, setError] = useState();
   const sliderRef = useRef();
   const { user } = useAuth();
-  const [allListings, setAllListings] = useState();
   const [state, dispatch] = useContext(ListingContext);
 
   const location = useLocation();
 
   useEffect(() => {
     requestPermission();
-  }, [permission]);
+  }, [permission, location]);
 
   const requestPermission = async () => {
-    console.log("Invalid");
-
-    if (permission.status !== "granted") {
-      setmodalVisible(true);
-    } else {
-      setmodalVisible(false);
-    }
-    getListings();
+    if (permission?.status !== "granted") return setmodalVisible(true);
+    setmodalVisible(false);
+    if (location) getListings();
   };
 
   const loadMore = async () => {
@@ -83,13 +67,8 @@ function ListingsScreen({ navigation }) {
         );
         setNextToken(newListings.data.nearbyListings.nextToken);
 
-        if (activeCategory) {
-          setListings(
-            lists.filter((item) => item.categoryId == activeCategory)
-          );
-        } else {
-          setListings(lists);
-        }
+        setListings(lists);
+
         setLoadingMore(false);
       } catch (error) {
         console.log("error loading more", error);
@@ -99,7 +78,6 @@ function ListingsScreen({ navigation }) {
 
   const getListings = async () => {
     setLoading(true);
-    console.log(location);
     const meters = isNaN(meters) ? meters : meters[0];
 
     try {
@@ -110,7 +88,6 @@ function ListingsScreen({ navigation }) {
 
       setNextToken(listings.data.nearbyListings.nextToken);
       setListings(listings.data.nearbyListings.items);
-      setAllListings(listings.data.nearbyListings.items);
       setError(false);
     } catch (error) {
       setError(true);
@@ -118,18 +95,7 @@ function ListingsScreen({ navigation }) {
     }
     setLoading(false);
     setLoadingMore(false);
-    setActiveCategory(null);
   };
-
-  // const filterListings = (cat) => {
-  //   if (cat) {
-  //     setActiveCategory(cat);
-  //     const data = allListings.filter((item) => item.categoryId == cat);
-  //     setListings(data);
-  //     return;
-  //   }
-  //   setListings(allListings);
-  // };
 
   const renderItem = ({ item }) => {
     return (
@@ -204,7 +170,7 @@ function ListingsScreen({ navigation }) {
       <View style={styles.sliderContainer}>
         <View style={styles.locationDetail}>
           <Text style={styles.distanceText}>
-            Distance Range : {meters / 1000} km
+            Items within {meters / 1000} km range
           </Text>
         </View>
         <Slider
@@ -222,19 +188,6 @@ function ListingsScreen({ navigation }) {
         />
       </View>
 
-      {/* <FlatList
-        contentContainerStyle={styles.categoriesContainer}
-        data={CATEGORIES}
-        keyExtractor={(item) => item.label}
-        horizontal
-        renderItem={({ item }) => (
-          <Pill
-            item={item}
-            activeItem={activeCategory}
-            onPress={(val) => filterListings(val)}
-          />
-        )}
-      /> */}
       <FlatList
         contentContainerStyle={styles.cardContainer}
         data={state.listings}

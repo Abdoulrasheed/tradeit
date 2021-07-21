@@ -7,6 +7,7 @@ import Icon from "../components/Icon";
 import routes from "../navigation/routes";
 import Screen from "../components/Screen";
 import useAuth from "../auth/useAuth";
+import AuthNavigator from "../navigation/AuthNavigator";
 
 const menuItems = [
   {
@@ -21,18 +22,23 @@ const menuItems = [
 
 function AccountScreen({ navigation }) {
   const { user, logOut } = useAuth();
+
+  if (!user) return <AuthNavigator />;
+
   const handleLogOut = () => {
     Alert.alert("Exit", "Are you sure you wants to logout ?", [
       {
-        text: 'Yes',
+        text: "Yes",
         onPress: () => logOut(),
       },
       {
-        text: 'No',
-        style: 'cancel', onPress: false
-      }
-    ])
-  }
+        text: "No",
+        style: "cancel",
+        onPress: false,
+      },
+    ]);
+  };
+
   return (
     <Screen style={styles.screen}>
       <View style={styles.container}>
@@ -72,9 +78,7 @@ function AccountScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  cancel: {
-    
-  },
+  cancel: {},
   screen: {
     backgroundColor: colors.light,
   },
